@@ -1,0 +1,27 @@
+{
+  "name": "purescript-sodium",
+  "version": "1.0.0",
+  "description": "dev dependencies for sodium wrapper",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "clean": "rimraf ./output",
+    "test": "pulp test",
+    "build": "npm run clean && pulp build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SodiumFRP/purescript-sodium.git"
+  },
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/SodiumFRP/purescript-sodium/issues"
+  },
+  "homepage": "https://github.com/SodiumFRP/purescript-sodium",
+  "devDependencies": {
+    "rimraf": "2.6.2",
+    "sodiumjs": "1.1.3"
+  }
+}
