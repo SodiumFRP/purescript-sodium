@@ -6,7 +6,7 @@ import Data.Either (Either(Right))
 import Data.Maybe (Maybe(Nothing))
 import Effect (Effect)
 import Effect.Aff (makeAff, nonCanceler)
-import FRP.Sodium (newStreamSink, listen, send)
+import SodiumFRP.Stream (newStreamSink, listen, send)
 import Test.Unit (suite, test)
 import Test.Unit.Assert as Assert
 import Test.Unit.Main (runTest)
@@ -42,4 +42,4 @@ main = runTest do
                 unlisten
                 pure nonCanceler 
             )
-            Assert.equal results (fromFoldable [4, 6])
+            Assert.equal (fromFoldable [4, 6]) results
