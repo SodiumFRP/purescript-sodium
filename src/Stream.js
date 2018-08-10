@@ -13,8 +13,8 @@ exports.newStreamSinkImpl = function(m) {
     return new StreamSink(m);
 }
 
-exports.sendImpl = function(streamSink, a) {
-    console.log("SENDING [" + a + "]");
+exports.sendImpl = function(a, streamSink) {
+    //console.log("SENDING [" + a + "]");
     streamSink.send(a);
 }
 
@@ -29,19 +29,24 @@ exports.newStreamImpl = function(v) {
 }
 
 // Stream
-exports.mapStream = function (f) {
+exports.mapImpl = function (f) {
     return function(s) {
         return s.map(f);
     }
 }
 
+exports.mapToImpl = function(x) {
+    return function(s) {
+        return s.mapTo(x);
+    }
+}
 
 exports.listenImpl = function(stream, listener) {
-    stream.listen(function(value) { console.log("GOT [" + value + "]")});
+    //stream.listen(function(value) { console.log("GOT [" + value + "]")});
     var unlistener = stream.listen(listener);
 
     return function() {
-        console.log("UNLISTENING");
+        //console.log("UNLISTENING");
         unlistener();
     }
 }
