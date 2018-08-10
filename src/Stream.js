@@ -13,14 +13,18 @@ exports.newStreamSinkImpl = function(m) {
     return new StreamSink(m);
 }
 
-exports.sendImpl = function(stream, a) {
+exports.sendImpl = function(streamSink, a) {
     console.log("SENDING [" + a + "]");
-    stream.send(a);
+    streamSink.send(a);
 }
 
-// Stream Vertex
+exports.toStreamImpl = function(streamSink) {
+    return streamSink;
+}
 
-exports.newStreamVertexImpl = function(v) {
+// Stream 
+
+exports.newStreamImpl = function(v) {
     return new StreamSink(v);
 }
 
