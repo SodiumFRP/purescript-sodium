@@ -1,4 +1,3 @@
-
 "use strict";
 
 const Sodium = require("sodiumjs");
@@ -29,16 +28,12 @@ exports.newStreamImpl = function(v) {
 }
 
 // Stream
-exports.mapImpl = function (f) {
-    return function(s) {
-        return s.map(f);
-    }
+exports.mapImpl = function (f, s) {
+    return s.map(f);
 }
 
-exports.mapToImpl = function(x) {
-    return function(s) {
-        return s.mapTo(x);
-    }
+exports.mapToImpl = function(x, s) {
+    return s.mapTo(x);
 }
 
 exports.listenImpl = function(stream, listener) {

@@ -13,12 +13,13 @@ import Data.Nullable (Nullable, toNullable)
 import Data.Maybe (Maybe)
 import Effect (Effect)
 import Effect.Uncurried (EffectFn1, mkEffectFn1, EffectFn2, runEffectFn2)
+import Data.Function.Uncurried (Fn2, runFn2)
 
 -- Stream 
 data Stream a = Stream a
 
 instance functorStream :: Functor Stream where
-    map f s = mapImpl f s
+    map = runFn2 mapImpl
 
 -- | Create a new Stream
 -- The optional value is a Vertex (internal use only?)
@@ -34,7 +35,7 @@ listen s cb = runEffectFn2 listenImpl s (mkEffectFn1 cb)
 -- | Transform the stream's event values into the specified constant value.
 -- b is a constant value.
 mapTo :: forall a b. b -> Stream a -> Stream b
-mapTo = mapToImpl
+mapTo = runFn2 mapToImpl
 
 -- StreamSink
 data StreamSink a = StreamSink a
@@ -48,11 +49,11 @@ newStreamSink a = newStreamSinkImpl (toNullable a)
 -- | Convert a StreamSink to a Stream
 -- This is a free operation, just to help the type system
 toStream :: forall a. StreamSink a -> Stream a
-toStream s = toStreamImpl s 
+toStream = toStreamImpl
 
 -- | Send an Event to the given StreamSink 
 send :: forall a. a -> StreamSink a -> Effect Unit
-send a s = runEffectFn2 sendImpl a s
+send = runEffectFn2 sendImpl
 
 --Foreign imports : Stream
 
@@ -60,8 +61,8 @@ foreign import data Vertex :: Type
 
 foreign import newStreamImpl :: forall a. Nullable (Vertex) -> Stream a
 foreign import listenImpl :: forall a. EffectFn2 (Stream a) (EffectFn1 a Unit) (Effect Unit)
-foreign import mapImpl :: forall a b. (a -> b) -> Stream a -> Stream b
-foreign import mapToImpl :: forall a b. b -> Stream a -> Stream b
+foreign import mapImpl :: forall a b. Fn2 (a -> b) (Stream a) (Stream b)
+foreign import mapToImpl :: forall a b. Fn2 b (Stream a) (Stream b)
 
 
 --Foreign imports : StreamSink
