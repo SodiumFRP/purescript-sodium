@@ -8,8 +8,8 @@ const Vertex = Sodium.Vertex;
 
 // Stream Sink
 
-exports.newStreamSinkImpl = function(m) {
-    return new StreamSink(m);
+exports.newStreamSinkImpl = function(mergeFn) {
+    return new StreamSink(mergeFn);
 }
 
 exports.sendImpl = function(a, streamSink) {

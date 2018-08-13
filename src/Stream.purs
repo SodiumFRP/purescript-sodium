@@ -13,7 +13,7 @@ import Data.Nullable (Nullable, toNullable)
 import Data.Maybe (Maybe)
 import Effect (Effect)
 import Effect.Uncurried (EffectFn1, mkEffectFn1, EffectFn2, runEffectFn2)
-import Data.Function.Uncurried (Fn2, runFn2)
+import Data.Function.Uncurried (Fn2, runFn2, mkFn2)
 
 -- Stream 
 data Stream a = Stream a
@@ -44,7 +44,8 @@ data StreamSink a = StreamSink a
 -- StreamSinks can be used to send events
 -- The optional value is merging function
 newStreamSink :: forall a. Maybe (a -> a -> a) -> StreamSink a
-newStreamSink a = newStreamSinkImpl (toNullable a)
+newStreamSink m = 
+    newStreamSinkImpl (toNullable (mkFn2 <$> m))
 
 -- | Convert a StreamSink to a Stream
 -- This is a free operation, just to help the type system
@@ -67,6 +68,6 @@ foreign import mapToImpl :: forall a b. Fn2 b (Stream a) (Stream b)
 
 --Foreign imports : StreamSink
 
-foreign import newStreamSinkImpl :: forall a. Nullable (a -> a -> a) -> StreamSink a
+foreign import newStreamSinkImpl :: forall a. Nullable (Fn2 a a a) -> StreamSink a
 foreign import sendImpl :: forall a. EffectFn2 a (StreamSink a) Unit
 foreign import toStreamImpl :: forall a. StreamSink a -> Stream a

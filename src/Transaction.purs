@@ -2,11 +2,10 @@ module SodiumFRP.Transaction (
     runTransaction
 ) where
 
-import Prelude
-import Data.Nullable (Nullable, toNullable)
-import Data.Maybe (Maybe)
 import Effect (Effect)
-import Effect.Uncurried (EffectFn1, mkEffectFn1, EffectFn2, runEffectFn2)
+import Effect.Uncurried (EffectFn1, runEffectFn1)
 
-runTransaction :: Int
-runTransaction = 2
+runTransaction :: forall a. Effect a -> Effect a
+runTransaction = runEffectFn1 runTransactionImpl 
+
+foreign import runTransactionImpl :: forall a. EffectFn1 (Effect a) (a)

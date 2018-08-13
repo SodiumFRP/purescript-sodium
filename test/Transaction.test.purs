@@ -2,18 +2,18 @@ module Test.Transaction (testTransaction) where
 
 import Prelude
 
-import Data.Either (Either(Right))
-import Data.Maybe (Maybe(Nothing))
+import SodiumFRP.Transaction (runTransaction)
 import Effect (Effect)
-import Effect.Aff (makeAff, nonCanceler)
+import Effect.Class (liftEffect)
 import Test.Unit (suite, test)
 import Test.Unit.Assert as Assert
 import Test.Unit.Main (runTest)
-import Effect.Ref as Ref
-import Data.List (List(Nil), snoc, length, fromFoldable)
 
 testTransaction :: Effect Unit
 testTransaction = runTest do
     suite "Transaction" do
-        test "test transaction" do
-            Assert.equal 2 2
+        test "test pure transaction" do
+            result <- liftEffect $ runTransaction (
+              pure 2
+            )
+            Assert.equal result 2

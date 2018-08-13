@@ -3,7 +3,7 @@ module Test.Stream (testStream) where
 import Prelude
 
 import Data.Either (Either(Right))
-import Data.Maybe (Maybe(Nothing))
+import Data.Maybe (Maybe(Nothing, Just))
 import Effect (Effect)
 import Effect.Aff (makeAff, nonCanceler)
 import SodiumFRP.Stream (
@@ -12,6 +12,8 @@ import SodiumFRP.Stream (
     send, 
     toStream,
     mapTo)
+
+import SodiumFRP.Transaction (runTransaction)
 import Test.Unit (suite, test)
 import Test.Unit.Assert as Assert
 import Test.Unit.Main (runTest)
@@ -70,3 +72,35 @@ testStream = runTest do
                 pure nonCanceler 
             )
             Assert.equal result 4
+
+    suite "merge stream tests" do
+        test "test merge left" do
+            let a = newStreamSink (Just $ \l -> \r -> l)
+            let b = ((\x -> x + x) :: Int -> Int) <$> (toStream a)
+            result <- makeAff (\cb -> do
+                unlisten <- listen b \value -> do
+                    cb $ Right value 
+                _ <- runTransaction (
+                    do 
+                        _ <- send 2 a
+                        send 3 a
+                )
+                unlisten
+                pure nonCanceler 
+            )
+            Assert.equal (4) result
+        test "test merge right" do
+            let a = newStreamSink (Just $ \l -> \r -> r)
+            let b = ((\x -> x + x) :: Int -> Int) <$> (toStream a)
+            result <- makeAff (\cb -> do
+                unlisten <- listen b \value -> do
+                    cb $ Right value 
+                _ <- runTransaction (
+                    do 
+                        _ <- send 2 a
+                        send 3 a
+                )
+                unlisten
+                pure nonCanceler 
+            )
+            Assert.equal (6) result
