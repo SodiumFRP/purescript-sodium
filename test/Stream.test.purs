@@ -11,7 +11,9 @@ import SodiumFRP.Stream (
     listen, 
     send, 
     toStream,
-    mapTo)
+    mapTo,
+    orElse
+)
 
 import SodiumFRP.Transaction (runTransaction)
 import Test.Unit (suite, test)
@@ -78,11 +80,11 @@ testStream = runTest do
             let a = newStreamSink (Just $ \l -> \r -> l)
             let b = ((\x -> x + x) :: Int -> Int) <$> (toStream a)
             result <- makeAff (\cb -> do
-                unlisten <- listen b \value -> do
+                unlisten <- listen b \value -> 
                     cb $ Right value 
-                _ <- runTransaction (
+                runTransaction (
                     do 
-                        _ <- send 2 a
+                        send 2 a
                         send 3 a
                 )
                 unlisten
@@ -93,14 +95,30 @@ testStream = runTest do
             let a = newStreamSink (Just $ \l -> \r -> r)
             let b = ((\x -> x + x) :: Int -> Int) <$> (toStream a)
             result <- makeAff (\cb -> do
-                unlisten <- listen b \value -> do
+                unlisten <- listen b \value ->
                     cb $ Right value 
-                _ <- runTransaction (
+                runTransaction (
                     do 
-                        _ <- send 2 a
+                        send 2 a
                         send 3 a
                 )
                 unlisten
                 pure nonCanceler 
             )
             Assert.equal (6) result
+        test "test orElse" do
+            let a = newStreamSink Nothing 
+            let b = newStreamSink Nothing
+            let c = orElse (toStream a) (toStream b)
+            result <- makeAff (\cb -> do
+                unlisten <- listen c \value ->
+                    cb $ Right value 
+                runTransaction (
+                    do 
+                        send 2 a
+                        send 3 b
+                )
+                unlisten
+                pure nonCanceler 
+            )
+            Assert.equal 3 result

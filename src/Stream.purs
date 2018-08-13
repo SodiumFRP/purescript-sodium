@@ -5,7 +5,8 @@ module SodiumFRP.Stream (
     newStreamSink,
     listen,
     send,
-    mapTo
+    mapTo,
+    orElse
 ) where
 
 import Prelude
@@ -37,6 +38,18 @@ listen s cb = runEffectFn2 listenImpl s (mkEffectFn1 cb)
 mapTo :: forall a b. b -> Stream a -> Stream b
 mapTo = runFn2 mapToImpl
 
+{-|
+    Variant of merge() that merges two streams and will drop an event
+    in the simultaneous case of two events in the same Transaction
+
+    The events from the second stream take priority here
+
+    If you want to specify your own merging function, use merge()
+-}
+orElse :: forall a. Stream a -> Stream a -> Stream a
+orElse = runFn2 orElseImpl
+
+
 -- StreamSink
 data StreamSink a = StreamSink a
 
@@ -64,6 +77,7 @@ foreign import newStreamImpl :: forall a. Nullable (Vertex) -> Stream a
 foreign import listenImpl :: forall a. EffectFn2 (Stream a) (EffectFn1 a Unit) (Effect Unit)
 foreign import mapImpl :: forall a b. Fn2 (a -> b) (Stream a) (Stream b)
 foreign import mapToImpl :: forall a b. Fn2 b (Stream a) (Stream b)
+foreign import orElseImpl :: forall a. Fn2 (Stream a) (Stream a) (Stream a)
 
 
 --Foreign imports : StreamSink

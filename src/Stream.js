@@ -27,13 +27,16 @@ exports.newStreamImpl = function(v) {
     return new StreamSink(v);
 }
 
-// Stream
 exports.mapImpl = function (f, s) {
     return s.map(f);
 }
 
 exports.mapToImpl = function(x, s) {
     return s.mapTo(x);
+}
+
+exports.orElseImpl = function(other, s) {
+    return s.orElse(other);
 }
 
 exports.listenImpl = function(stream, listener) {
