@@ -39,6 +39,11 @@ exports.orElseImpl = function(other, s) {
     return s.orElse(other);
 }
 
+exports.mergeImpl = function(f, other, s) {
+    //flipped so that other's events are on the left
+    return other.merge(s, f);
+}
+
 exports.listenImpl = function(stream, listener) {
     //stream.listen(function(value) { console.log("GOT [" + value + "]")});
     var unlistener = stream.listen(listener);

@@ -12,7 +12,8 @@ import SodiumFRP.Stream (
     send, 
     toStream,
     mapTo,
-    orElse
+    orElse,
+    merge
 )
 
 import SodiumFRP.Transaction (runTransaction)
@@ -76,7 +77,7 @@ testStream = runTest do
             Assert.equal result 4
 
     suite "merge stream tests" do
-        test "test merge left" do
+        test "test merge constructor left" do
             let a = newStreamSink (Just $ \l -> \r -> l)
             let b = ((\x -> x + x) :: Int -> Int) <$> (toStream a)
             result <- makeAff (\cb -> do
@@ -91,7 +92,7 @@ testStream = runTest do
                 pure nonCanceler 
             )
             Assert.equal (4) result
-        test "test merge right" do
+        test "test merge constructor right" do
             let a = newStreamSink (Just $ \l -> \r -> r)
             let b = ((\x -> x + x) :: Int -> Int) <$> (toStream a)
             result <- makeAff (\cb -> do
@@ -112,6 +113,38 @@ testStream = runTest do
             let c = orElse (toStream a) (toStream b)
             result <- makeAff (\cb -> do
                 unlisten <- listen c \value ->
+                    cb $ Right value 
+                runTransaction (
+                    do 
+                        send 2 a
+                        send 3 b
+                )
+                unlisten
+                pure nonCanceler 
+            )
+            Assert.equal 3 result
+        test "test merge left" do
+            let a = newStreamSink Nothing
+            let b = newStreamSink Nothing 
+            let c = merge (\l -> \r -> l) (toStream a) (toStream b)
+            result <- makeAff (\cb -> do
+                unlisten <- listen c \value -> 
+                    cb $ Right value 
+                runTransaction (
+                    do 
+                        send 2 a
+                        send 3 b
+                )
+                unlisten
+                pure nonCanceler 
+            )
+            Assert.equal 2 result
+        test "test merge right" do
+            let a = newStreamSink Nothing
+            let b = newStreamSink Nothing 
+            let c = merge (\l -> \r -> r) (toStream a) (toStream b)
+            result <- makeAff (\cb -> do
+                unlisten <- listen c \value -> 
                     cb $ Right value 
                 runTransaction (
                     do 
