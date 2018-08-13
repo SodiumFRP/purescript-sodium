@@ -7,7 +7,8 @@ module SodiumFRP.Stream (
     send,
     mapTo,
     orElse,
-    merge
+    merge,
+    filter
 ) where
 
 import Prelude
@@ -66,6 +67,10 @@ orElse = runFn2 orElseImpl
 merge :: forall a. (a -> a -> a) -> Stream a -> Stream a -> Stream a
 merge f = runFn3 mergeImpl (mkFn2 f)
 
+-- | Return a stream that only outputs events for which the predicate returns true.
+filter :: forall a. (a -> Boolean) -> Stream a -> Stream a
+filter = runFn2 filterImpl
+
 -- StreamSink
 data StreamSink a = StreamSink a
 
@@ -95,6 +100,7 @@ foreign import mapImpl :: forall a b. Fn2 (a -> b) (Stream a) (Stream b)
 foreign import mapToImpl :: forall a b. Fn2 b (Stream a) (Stream b)
 foreign import orElseImpl :: forall a. Fn2 (Stream a) (Stream a) (Stream a)
 foreign import mergeImpl :: forall a. Fn3 (Fn2 a a a) (Stream a) (Stream a) (Stream a)
+foreign import filterImpl :: forall a. Fn2 (a -> Boolean) (Stream a) (Stream a)
 
 
 --Foreign imports : StreamSink

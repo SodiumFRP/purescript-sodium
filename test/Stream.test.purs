@@ -13,7 +13,8 @@ import SodiumFRP.Stream (
     toStream,
     mapTo,
     orElse,
-    merge
+    merge,
+    filter
 )
 
 import SodiumFRP.Transaction (runTransaction)
@@ -155,3 +156,17 @@ testStream = runTest do
                 pure nonCanceler 
             )
             Assert.equal 3 result
+    suite "filter" do
+        test "test filter" do
+            let a = newStreamSink Nothing
+            let b = filter (\x -> x == 2) (toStream a)
+            result <- makeAff (\cb -> do
+                unlisten <- listen b \value ->
+                    cb $ Right value 
+                send 4 a
+                send 3 a
+                send 2 a
+                unlisten
+                pure nonCanceler 
+            )
+            Assert.equal result 2

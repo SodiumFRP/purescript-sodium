@@ -44,6 +44,10 @@ exports.mergeImpl = function(f, other, s) {
     return other.merge(s, f);
 }
 
+exports.filterImpl = function(f, s) {
+    return s.filter(f); 
+}
+
 exports.listenImpl = function(stream, listener) {
     //stream.listen(function(value) { console.log("GOT [" + value + "]")});
     var unlistener = stream.listen(listener);
