@@ -3,7 +3,8 @@ module SodiumFRP.Cell (
     CellSink,
     newCell,
     newCellSink,
-    toCell
+    toCell,
+    sample
 ) where
 
 import SodiumFRP.Stream (Stream)
@@ -31,6 +32,9 @@ instance listenStream :: Listenable Cell where
 newCell :: forall a. a -> Maybe (Stream a) -> Cell a
 newCell a s = runFn2 newCellImpl a (toNullable s)
 
+sample :: forall a. Cell a -> a
+sample = sampleImpl
+
 -- Cell Sink
 data CellSink a = CellSink a
 
@@ -44,6 +48,7 @@ toCell = toCellImpl
 foreign import newCellImpl :: forall a. Fn2 a (Nullable (Stream a)) (Cell a)
 foreign import listenImpl :: forall a. EffectFn2 (Cell a) (EffectFn1 a Unit) (Effect Unit)
 foreign import mapImpl :: forall a b. Fn2 (a -> b) (Cell a) (Cell b)
+foreign import sampleImpl :: forall a. Cell a -> a
 
 -- Foreign imports : CellSink
 foreign import newCellSinkImpl :: forall a. Fn2 a (Nullable (Fn2 a a a)) (CellSink a)

@@ -26,6 +26,10 @@ exports.listenImpl = function(c, listener) {
     }
 }
 
+exports.sampleImpl = function(c) {
+    return c.sample();
+}
+
 // Cell Sink
 exports.newCellSinkImpl = function(x, mergeFn) {
     return new Cell(x, mergeFn);

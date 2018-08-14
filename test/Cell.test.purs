@@ -9,7 +9,8 @@ import Effect.Aff (makeAff, nonCanceler)
 import SodiumFRP.Cell (
     newCellSink, 
     newCell,
-    toCell
+    toCell,
+    sample
 )
 
 import SodiumFRP.Multi (listen)
@@ -23,7 +24,7 @@ import Data.List (List(Nil), snoc, length, fromFoldable)
 testCell :: Effect Unit
 testCell = runTest do
     suite "[cell] basic tests" do
-        test "test constant" do
+        test "constant" do
             let a = newCell 2 Nothing
             result <- makeAff (\cb -> do
                 unlisten <- listen a \value ->
@@ -32,7 +33,7 @@ testCell = runTest do
                 pure nonCanceler 
             )
             Assert.equal result 2
-        test "test map" do
+        test "map" do
             let a = newCell 2 Nothing
             let b = (\x -> x + x) <$> a
             result <- makeAff (\cb -> do
@@ -42,3 +43,7 @@ testCell = runTest do
                 pure nonCanceler 
             )
             Assert.equal result 4
+
+        test "sample" do
+            let a = newCell 2 Nothing
+            Assert.equal (sample a) 2
