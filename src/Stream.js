@@ -4,6 +4,7 @@ const Sodium = require("sodiumjs");
 
 const Stream = Sodium.Stream;
 const StreamSink = Sodium.StreamSink;
+const StreamLoop = Sodium.StreamLoop;
 const Vertex = Sodium.Vertex;
 
 // Stream Sink
