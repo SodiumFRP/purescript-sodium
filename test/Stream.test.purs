@@ -26,7 +26,7 @@ import Data.List (List(Nil), snoc, length, fromFoldable)
 testStream :: Effect Unit
 testStream = runTest do
     suite "[stream] basic tests" do
-        test "test single send" do
+        test "single send" do
             let a = newStreamSink Nothing
             result <- makeAff (\cb -> do
                 unlisten <- listen (toStream a) \value ->
@@ -36,7 +36,7 @@ testStream = runTest do
                 pure nonCanceler 
             )
             Assert.equal result 2
-        test "test single send with map" do
+        test "single send with map" do
             let a = newStreamSink Nothing
             let b = ((\x -> x + x) :: Int -> Int) <$> (toStream a)
             result <- makeAff (\cb -> do
@@ -48,7 +48,7 @@ testStream = runTest do
             )
             Assert.equal result 4
 
-        test "test multi send with map" do
+        test "multi send with map" do
             let a = newStreamSink Nothing
             let b = ((\x -> x + x) :: Int -> Int) <$> (toStream a)
             results <- makeAff (\cb -> do
@@ -64,7 +64,7 @@ testStream = runTest do
             )
             Assert.equal (fromFoldable [4, 6]) results
 
-        test "test mapTo" do
+        test "mapTo" do
             let a = newStreamSink Nothing
             let b = mapTo 4 (toStream a)
             result <- makeAff (\cb -> do
@@ -77,7 +77,7 @@ testStream = runTest do
             Assert.equal result 4
 
     suite "[stream] merge tests" do
-        test "test merge constructor left" do
+        test "merge constructor left" do
             let a = newStreamSink (Just $ \l -> \r -> l)
             let b = ((\x -> x + x) :: Int -> Int) <$> (toStream a)
             result <- makeAff (\cb -> do
@@ -92,7 +92,7 @@ testStream = runTest do
                 pure nonCanceler 
             )
             Assert.equal (4) result
-        test "test merge constructor right" do
+        test "merge constructor right" do
             let a = newStreamSink (Just $ \l -> \r -> r)
             let b = ((\x -> x + x) :: Int -> Int) <$> (toStream a)
             result <- makeAff (\cb -> do
@@ -107,7 +107,7 @@ testStream = runTest do
                 pure nonCanceler 
             )
             Assert.equal (6) result
-        test "test orElse" do
+        test "orElse" do
             let a = newStreamSink Nothing 
             let b = newStreamSink Nothing
             let c = orElse (toStream a) (toStream b)
@@ -123,7 +123,7 @@ testStream = runTest do
                 pure nonCanceler 
             )
             Assert.equal 3 result
-        test "test merge left" do
+        test "merge left" do
             let a = newStreamSink Nothing
             let b = newStreamSink Nothing 
             let c = merge (\l -> \r -> l) (toStream a) (toStream b)
@@ -139,7 +139,7 @@ testStream = runTest do
                 pure nonCanceler 
             )
             Assert.equal 2 result
-        test "test merge right" do
+        test "merge right" do
             let a = newStreamSink Nothing
             let b = newStreamSink Nothing 
             let c = merge (\l -> \r -> r) (toStream a) (toStream b)
@@ -156,7 +156,7 @@ testStream = runTest do
             )
             Assert.equal 3 result
     suite "[stream] filter" do
-        test "test filter" do
+        test "filter" do
             let a = newStreamSink Nothing
             let b = filter (\x -> x == 2) (toStream a)
             result <- makeAff (\cb -> do
