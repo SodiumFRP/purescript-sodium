@@ -11,7 +11,7 @@ import Test.Unit.Main (runTest)
 
 testTransaction :: Effect Unit
 testTransaction = runTest do
-    suite "Transaction" do
+    suite "[transaction]" do
         test "test pure transaction" do
             result <- liftEffect $ runTransaction (
               pure 2

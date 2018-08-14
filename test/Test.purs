@@ -4,9 +4,10 @@ import Prelude
 import Effect (Effect)
 import Test.Stream (testStream)
 import Test.Transaction (testTransaction)
+import Test.Cell (testCell)
 
 main :: Effect Unit
 main = do
-    _ <- testStream
-    _ <- testTransaction
-    pure unit
+    testTransaction
+    testStream
+    testCell 

@@ -3,13 +3,13 @@ module SodiumFRP.Stream (
     StreamSink,
     toStream,
     newStreamSink,
-    listen,
     send,
     mapTo,
     orElse,
     merge,
     filter
 ) where
+import SodiumFRP.Multi (class Listenable)
 
 import Prelude
 import Data.Nullable (Nullable, toNullable)
@@ -21,19 +21,18 @@ import Data.Function.Uncurried (Fn2, runFn2, mkFn2, Fn3, runFn3)
 -- Stream 
 data Stream a = Stream a
 
+-- | Functor
 instance functorStream :: Functor Stream where
     map = runFn2 mapImpl
+
+-- | Listenable (see Multi)
+instance listenStream :: Listenable Stream where
+    listen s cb = runEffectFn2 listenImpl s (mkEffectFn1 cb)
 
 -- | Create a new Stream
 -- The optional value is a Vertex (internal use only?)
 newStream :: forall a. Maybe Vertex -> Stream a
 newStream v = newStreamImpl (toNullable v)
-
--- | Listen for firings of this event.
--- The returned Effect is an is a function that unregisteres the listener
--- This is the observer pattern.
-listen :: forall a. Stream a -> (a -> Effect Unit) -> Effect (Effect Unit)
-listen s cb = runEffectFn2 listenImpl s (mkEffectFn1 cb)
 
 -- | Transform the stream's event values into the specified constant value.
 -- b is a constant value.

@@ -8,7 +8,6 @@ import Effect (Effect)
 import Effect.Aff (makeAff, nonCanceler)
 import SodiumFRP.Stream (
     newStreamSink, 
-    listen, 
     send, 
     toStream,
     mapTo,
@@ -16,7 +15,7 @@ import SodiumFRP.Stream (
     merge,
     filter
 )
-
+import SodiumFRP.Multi (listen)
 import SodiumFRP.Transaction (runTransaction)
 import Test.Unit (suite, test)
 import Test.Unit.Assert as Assert
@@ -26,7 +25,7 @@ import Data.List (List(Nil), snoc, length, fromFoldable)
 
 testStream :: Effect Unit
 testStream = runTest do
-    suite "basic stream tests" do
+    suite "[stream] basic tests" do
         test "test single send" do
             let a = newStreamSink Nothing
             result <- makeAff (\cb -> do
@@ -77,7 +76,7 @@ testStream = runTest do
             )
             Assert.equal result 4
 
-    suite "merge stream tests" do
+    suite "[stream] merge tests" do
         test "test merge constructor left" do
             let a = newStreamSink (Just $ \l -> \r -> l)
             let b = ((\x -> x + x) :: Int -> Int) <$> (toStream a)
@@ -156,7 +155,7 @@ testStream = runTest do
                 pure nonCanceler 
             )
             Assert.equal 3 result
-    suite "filter" do
+    suite "[stream] filter" do
         test "test filter" do
             let a = newStreamSink Nothing
             let b = filter (\x -> x == 2) (toStream a)
