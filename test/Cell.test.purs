@@ -32,3 +32,13 @@ testCell = runTest do
                 pure nonCanceler 
             )
             Assert.equal result 2
+        test "test map" do
+            let a = newCell 2 Nothing
+            let b = (\x -> x + x) <$> a
+            result <- makeAff (\cb -> do
+                unlisten <- listen b \value ->
+                    cb $ Right value 
+                unlisten
+                pure nonCanceler 
+            )
+            Assert.equal result 4
