@@ -11,7 +11,8 @@ import SodiumFRP.Stream (
     orElse,
     merge,
     filter,
-    gate
+    gate,
+    snapshot1
 )
 import SodiumFRP.Class (
     send, 
@@ -19,7 +20,9 @@ import SodiumFRP.Class (
     newStreamSink, 
     toStream,
     newCellSink,
-    toCell
+    toCell,
+    newCell,
+    Stream
 )
 
 import SodiumFRP.Transaction (runTransaction)
@@ -188,6 +191,20 @@ testStream = runTest do
                 send 3 a
                 send true b
                 send 2 a
+                unlisten
+                pure nonCanceler 
+            )
+            Assert.equal result 2
+    
+    suite "[stream] snapshot" do
+        test "snapshot1" do
+            let a = newStreamSink Nothing
+            let b = newCell 2 Nothing
+            let c = snapshot1 b ((toStream a) :: Stream Int)
+            result <- makeAff (\cb -> do
+                unlisten <- listen c \value ->
+                    cb $ Right value 
+                send 4 a
                 unlisten
                 pure nonCanceler 
             )

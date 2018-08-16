@@ -23,5 +23,7 @@ exports.gateImpl = function (c, s) {
     return s.gate(c);
 }
 
-
+exports.snapshot1Impl = function (c, s) {
+    return s.snapshot1(c);
+}
 

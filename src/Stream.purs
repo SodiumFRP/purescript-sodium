@@ -3,7 +3,8 @@ module SodiumFRP.Stream (
     orElse,
     merge,
     filter,
-    gate
+    gate,
+    snapshot1
 ) where
 
 import SodiumFRP.Class (
@@ -57,8 +58,16 @@ filter = runFn2 filterImpl
 gate :: forall a. Cell Boolean -> Stream a -> Stream a
 gate = runFn2 gateImpl
 
+snapshot1 :: forall a. Cell a -> Stream a -> Stream a
+snapshot1 = runFn2 snapshot1Impl
+
+
+
+-- Foreign imports
+
 foreign import mapToImpl :: forall a b. Fn2 b (Stream a) (Stream b)
 foreign import orElseImpl :: forall a. Fn2 (Stream a) (Stream a) (Stream a)
 foreign import mergeImpl :: forall a. Fn3 (Fn2 a a a) (Stream a) (Stream a) (Stream a)
 foreign import filterImpl :: forall a. Fn2 (a -> Boolean) (Stream a) (Stream a)
 foreign import gateImpl :: forall a. Fn2 (Cell Boolean) (Stream a) (Stream a)
+foreign import snapshot1Impl :: forall a. Fn2 (Cell a) (Stream a) (Stream a)
