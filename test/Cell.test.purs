@@ -7,13 +7,10 @@ import Data.Maybe (Maybe(Nothing))
 import Effect (Effect)
 import Effect.Aff (makeAff, nonCanceler)
 import SodiumFRP.Cell (
-    newCellSink, 
-    newCell,
-    toCell,
     sample
 )
 
-import SodiumFRP.Class (listen)
+import SodiumFRP.Class (listen, newCell)
 import Test.Unit (suite, test)
 import Test.Unit.Assert as Assert
 import Test.Unit.Main (runTest)

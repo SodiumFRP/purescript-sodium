@@ -1,6 +1,4 @@
 module SodiumFRP.Stream (
-    toStream,
-    newStreamSink,
     send,
     mapTo,
     orElse,
@@ -15,19 +13,11 @@ import SodiumFRP.Class (
 )
 
 import Prelude
-import Data.Nullable (Nullable, toNullable)
-import Data.Maybe (Maybe)
 import Effect (Effect)
 import Effect.Uncurried (EffectFn2, runEffectFn2)
 import Data.Function.Uncurried (Fn2, runFn2, mkFn2, Fn3, runFn3)
 
 -- Stream 
-
-
--- | Create a new Stream
--- The optional value is a Vertex (internal use only?)
-newStream :: forall a. Maybe Vertex -> Stream a
-newStream v = newStreamImpl (toNullable v)
 
 -- | Transform the stream's event values into the specified constant value.
 -- b is a constant value.
@@ -75,17 +65,6 @@ gate = runFn2 gateImpl
 
 -- StreamSink
 
--- | Create a new StreamSink
--- StreamSinks can be used to send events
--- The optional value is merging function
-newStreamSink :: forall a. Maybe (a -> a -> a) -> StreamSink a
-newStreamSink m = 
-    newStreamSinkImpl (toNullable (mkFn2 <$> m))
-
--- | Convert a StreamSink to a Stream
--- This is a free operation, just to help the type system
-toStream :: forall a. StreamSink a -> Stream a
-toStream = toStreamImpl
 
 -- | Send an Event to the given StreamSink 
 send :: forall a. a -> StreamSink a -> Effect Unit
@@ -93,9 +72,7 @@ send = runEffectFn2 sendImpl
 
 --Foreign imports : Stream
 
-foreign import data Vertex :: Type
 
-foreign import newStreamImpl :: forall a. Nullable (Vertex) -> Stream a
 foreign import mapToImpl :: forall a b. Fn2 b (Stream a) (Stream b)
 foreign import orElseImpl :: forall a. Fn2 (Stream a) (Stream a) (Stream a)
 foreign import mergeImpl :: forall a. Fn3 (Fn2 a a a) (Stream a) (Stream a) (Stream a)
@@ -104,6 +81,4 @@ foreign import gateImpl :: forall a. Fn2 (Cell Boolean) (Stream a) (Stream a)
 
 --Foreign imports : StreamSink
 
-foreign import newStreamSinkImpl :: forall a. Nullable (Fn2 a a a) -> StreamSink a
 foreign import sendImpl :: forall a. EffectFn2 a (StreamSink a) Unit
-foreign import toStreamImpl :: forall a. StreamSink a -> Stream a

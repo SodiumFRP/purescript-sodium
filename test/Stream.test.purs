@@ -7,15 +7,14 @@ import Data.Maybe (Maybe(Nothing, Just))
 import Effect (Effect)
 import Effect.Aff (makeAff, nonCanceler)
 import SodiumFRP.Stream (
-    newStreamSink, 
     send, 
-    toStream,
     mapTo,
     orElse,
     merge,
     filter
 )
-import SodiumFRP.Class (listen)
+import SodiumFRP.Class (listen, newStreamSink, toStream)
+
 import SodiumFRP.Transaction (runTransaction)
 import Test.Unit (suite, test)
 import Test.Unit.Assert as Assert
