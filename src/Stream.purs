@@ -1,6 +1,4 @@
 module SodiumFRP.Stream (
-    Stream,
-    StreamSink,
     toStream,
     newStreamSink,
     send,
@@ -9,25 +7,22 @@ module SodiumFRP.Stream (
     merge,
     filter
 ) where
-import SodiumFRP.Multi (class Listenable)
+
+import SodiumFRP.Class (
+    Stream,
+    StreamSink,
+    Cell
+)
 
 import Prelude
 import Data.Nullable (Nullable, toNullable)
 import Data.Maybe (Maybe)
 import Effect (Effect)
-import Effect.Uncurried (EffectFn1, mkEffectFn1, EffectFn2, runEffectFn2)
+import Effect.Uncurried (EffectFn2, runEffectFn2)
 import Data.Function.Uncurried (Fn2, runFn2, mkFn2, Fn3, runFn3)
 
 -- Stream 
-data Stream a = Stream a
 
--- | Functor
-instance functorStream :: Functor Stream where
-    map = runFn2 mapImpl
-
--- | Listenable (see Multi)
-instance listenStream :: Listenable Stream where
-    listen s cb = runEffectFn2 listenImpl s (mkEffectFn1 cb)
 
 -- | Create a new Stream
 -- The optional value is a Vertex (internal use only?)
@@ -70,8 +65,15 @@ merge f = runFn3 mergeImpl (mkFn2 f)
 filter :: forall a. (a -> Boolean) -> Stream a -> Stream a
 filter = runFn2 filterImpl
 
+{-|
+    Return a stream that only outputs events from the input stream
+    when the specified cell's value is true.
+-}
+
+gate :: forall a. Cell Boolean -> Stream a -> Stream a
+gate = runFn2 gateImpl
+
 -- StreamSink
-data StreamSink a = StreamSink a
 
 -- | Create a new StreamSink
 -- StreamSinks can be used to send events
@@ -94,13 +96,11 @@ send = runEffectFn2 sendImpl
 foreign import data Vertex :: Type
 
 foreign import newStreamImpl :: forall a. Nullable (Vertex) -> Stream a
-foreign import listenImpl :: forall a. EffectFn2 (Stream a) (EffectFn1 a Unit) (Effect Unit)
-foreign import mapImpl :: forall a b. Fn2 (a -> b) (Stream a) (Stream b)
 foreign import mapToImpl :: forall a b. Fn2 b (Stream a) (Stream b)
 foreign import orElseImpl :: forall a. Fn2 (Stream a) (Stream a) (Stream a)
 foreign import mergeImpl :: forall a. Fn3 (Fn2 a a a) (Stream a) (Stream a) (Stream a)
 foreign import filterImpl :: forall a. Fn2 (a -> Boolean) (Stream a) (Stream a)
-
+foreign import gateImpl :: forall a. Fn2 (Cell Boolean) (Stream a) (Stream a)
 
 --Foreign imports : StreamSink
 

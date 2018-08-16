@@ -15,7 +15,7 @@ import SodiumFRP.Stream (
     merge,
     filter
 )
-import SodiumFRP.Multi (listen)
+import SodiumFRP.Class (listen)
 import SodiumFRP.Transaction (runTransaction)
 import Test.Unit (suite, test)
 import Test.Unit.Assert as Assert

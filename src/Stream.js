@@ -28,9 +28,6 @@ exports.newStreamImpl = function(v) {
     return new StreamSink(v);
 }
 
-exports.mapImpl = function (f, s) {
-    return s.map(f);
-}
 
 exports.mapToImpl = function(x, s) {
     return s.mapTo(x);
@@ -49,14 +46,8 @@ exports.filterImpl = function(f, s) {
     return s.filter(f); 
 }
 
-exports.listenImpl = function(stream, listener) {
-    //stream.listen(function(value) { console.log("GOT [" + value + "]")});
-    var unlistener = stream.listen(listener);
-
-    return function() {
-        //console.log("UNLISTENING");
-        unlistener();
-    }
+exports.gateImpl = function (c, s) {
+    return s.gate(c);
 }
 
 

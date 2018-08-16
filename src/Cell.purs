@@ -1,31 +1,21 @@
 module SodiumFRP.Cell (
-    Cell,
-    CellSink,
     newCell,
     newCellSink,
     toCell,
     sample
 ) where
 
-import SodiumFRP.Stream (Stream)
-import SodiumFRP.Multi (class Listenable)
+import SodiumFRP.Class(
+    Cell,
+    CellSink,
+    Stream
+)
 import Prelude
 import Data.Nullable (Nullable, toNullable)
 import Data.Maybe (Maybe)
-import Effect (Effect)
-import Effect.Uncurried (EffectFn1, mkEffectFn1, EffectFn2, runEffectFn2)
-import Data.Function.Uncurried (Fn2, runFn2, mkFn2, Fn3, runFn3)
+import Data.Function.Uncurried (Fn2, runFn2, mkFn2)
 
 -- Cell
-data Cell a = Cell a
-
--- | Functor
-instance functorCell :: Functor Cell where
-    map = runFn2 mapImpl
-
--- | Listenable (see Multi)
-instance listenStream :: Listenable Cell where
-    listen s cb = runEffectFn2 listenImpl s (mkEffectFn1 cb)
 
 
 -- | Create a new Cell
@@ -36,7 +26,6 @@ sample :: forall a. Cell a -> a
 sample = sampleImpl
 
 -- Cell Sink
-data CellSink a = CellSink a
 
 newCellSink :: forall a. a -> Maybe (a -> a -> a) -> CellSink a
 newCellSink a m = runFn2 newCellSinkImpl a (toNullable (mkFn2 <$> m))
@@ -46,8 +35,6 @@ toCell = toCellImpl
 
 -- Foreign imports : Cell
 foreign import newCellImpl :: forall a. Fn2 a (Nullable (Stream a)) (Cell a)
-foreign import listenImpl :: forall a. EffectFn2 (Cell a) (EffectFn1 a Unit) (Effect Unit)
-foreign import mapImpl :: forall a b. Fn2 (a -> b) (Cell a) (Cell b)
 foreign import sampleImpl :: forall a. Cell a -> a
 
 -- Foreign imports : CellSink
