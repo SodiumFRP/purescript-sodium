@@ -11,10 +11,8 @@ import SodiumFRP.Class(
 sample :: forall a. Cell a -> a
 sample = sampleImpl
 
--- Cell Sink
-
-
 -- Foreign imports : Cell
 foreign import sampleImpl :: forall a. Cell a -> a
 
 -- Foreign imports : CellSink
+

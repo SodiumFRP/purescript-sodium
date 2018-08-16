@@ -1,23 +1,17 @@
 module SodiumFRP.Stream (
-    send,
     mapTo,
     orElse,
     merge,
-    filter
+    filter,
+    gate
 ) where
 
 import SodiumFRP.Class (
     Stream,
-    StreamSink,
     Cell
 )
 
-import Prelude
-import Effect (Effect)
-import Effect.Uncurried (EffectFn2, runEffectFn2)
 import Data.Function.Uncurried (Fn2, runFn2, mkFn2, Fn3, runFn3)
-
--- Stream 
 
 -- | Transform the stream's event values into the specified constant value.
 -- b is a constant value.
@@ -63,22 +57,8 @@ filter = runFn2 filterImpl
 gate :: forall a. Cell Boolean -> Stream a -> Stream a
 gate = runFn2 gateImpl
 
--- StreamSink
-
-
--- | Send an Event to the given StreamSink 
-send :: forall a. a -> StreamSink a -> Effect Unit
-send = runEffectFn2 sendImpl
-
---Foreign imports : Stream
-
-
 foreign import mapToImpl :: forall a b. Fn2 b (Stream a) (Stream b)
 foreign import orElseImpl :: forall a. Fn2 (Stream a) (Stream a) (Stream a)
 foreign import mergeImpl :: forall a. Fn3 (Fn2 a a a) (Stream a) (Stream a) (Stream a)
 foreign import filterImpl :: forall a. Fn2 (a -> Boolean) (Stream a) (Stream a)
 foreign import gateImpl :: forall a. Fn2 (Cell Boolean) (Stream a) (Stream a)
-
---Foreign imports : StreamSink
-
-foreign import sendImpl :: forall a. EffectFn2 a (StreamSink a) Unit

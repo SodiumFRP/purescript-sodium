@@ -7,6 +7,21 @@ import Data.Maybe (Maybe)
 import Data.Function.Uncurried (Fn2, runFn2, mkFn2)
 import Effect.Uncurried (EffectFn1, mkEffectFn1, EffectFn2, runEffectFn2)
 
+-- Typeclasses
+
+-- | Listenable
+-- Listen for firings of this cell or event.
+-- The returned Effect is a function that unregisteres the listener
+-- This is the observer pattern.
+
+class Listenable l where
+    listen :: forall a. l a -> (a -> Effect Unit) -> Effect (Effect Unit)
+
+-- | Sendable
+-- Send events or change of behavior
+class Sendable s where
+    send :: forall a. a -> s a -> Effect Unit
+
 -- Stream 
 data Stream a = Stream a
 data StreamSink a = StreamSink a
@@ -16,6 +31,9 @@ instance functorStream :: Functor Stream where
 
 instance listenStream :: Listenable Stream where
     listen s cb = runEffectFn2 listenStreamImpl s (mkEffectFn1 cb)
+
+instance sendStream :: Sendable StreamSink where
+    send = runEffectFn2 sendStreamImpl
 
 -- | Create a new Stream
 -- The optional value is a Vertex (internal use only?)
@@ -43,6 +61,7 @@ foreign import listenStreamImpl :: forall a. EffectFn2 (Stream a) (EffectFn1 a U
 
 foreign import mapStreamImpl :: forall a b. Fn2 (a -> b) (Stream a) (Stream b)
 
+foreign import sendStreamImpl :: forall a. EffectFn2 a (StreamSink a) Unit
 -- Cell
 data Cell a = Cell a
 data CellSink a = CellSink a
@@ -53,6 +72,9 @@ instance functorCell :: Functor Cell where
 instance listenCell :: Listenable Cell where
     listen s cb = runEffectFn2 listenCellImpl s (mkEffectFn1 cb)
 
+
+instance sendCell :: Sendable CellSink where
+    send = runEffectFn2 sendCellImpl
 
 -- | Create a new Cell
 newCell :: forall a. a -> Maybe (Stream a) -> Cell a
@@ -76,10 +98,5 @@ foreign import listenCellImpl :: forall a. EffectFn2 (Cell a) (EffectFn1 a Unit)
 foreign import mapCellImpl :: forall a b. Fn2 (a -> b) (Cell a) (Cell b)
 
 
--- | Listenable
--- Listen for firings of this cell or event.
--- The returned Effect is a function that unregisteres the listener
--- This is the observer pattern.
+foreign import sendCellImpl :: forall a. EffectFn2 a (CellSink a) Unit
 
-class Listenable l where
-    listen :: forall a. l a -> (a -> Effect Unit) -> Effect (Effect Unit)

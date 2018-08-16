@@ -1,15 +1,5 @@
 "use strict";
 
-// Stream Sink
-
-exports.sendImpl = function(a, streamSink) {
-    //console.log("SENDING [" + a + "]");
-    streamSink.send(a);
-}
-
-
-// Stream 
-
 
 
 exports.mapToImpl = function(x, s) {

@@ -38,6 +38,10 @@ exports.listenStreamImpl = function(stream, listener) {
 }
 
 
+exports.sendStreamImpl = function(a, streamSink) {
+    //console.log("SENDING [" + a + "]");
+    streamSink.send(a);
+}
 //Cell
 
 exports.newCellImpl = function(x, s) {
@@ -46,7 +50,7 @@ exports.newCellImpl = function(x, s) {
 
 
 exports.newCellSinkImpl = function(x, mergeFn) {
-    return new Cell(x, mergeFn);
+    return new CellSink(x, mergeFn);
 }
 
 exports.toCellImpl = function(cellSink) {
@@ -68,3 +72,7 @@ exports.listenCellImpl = function(c, listener) {
 }
 
 
+exports.sendCellImpl = function(a, cellSink) {
+    //console.log("SENDING [" + a + "]");
+    cellSink.send(a);
+}

@@ -7,13 +7,20 @@ import Data.Maybe (Maybe(Nothing, Just))
 import Effect (Effect)
 import Effect.Aff (makeAff, nonCanceler)
 import SodiumFRP.Stream (
-    send, 
     mapTo,
     orElse,
     merge,
-    filter
+    filter,
+    gate
 )
-import SodiumFRP.Class (listen, newStreamSink, toStream)
+import SodiumFRP.Class (
+    send, 
+    listen, 
+    newStreamSink, 
+    toStream,
+    newCellSink,
+    toCell
+)
 
 import SodiumFRP.Transaction (runTransaction)
 import Test.Unit (suite, test)
@@ -163,6 +170,23 @@ testStream = runTest do
                     cb $ Right value 
                 send 4 a
                 send 3 a
+                send 2 a
+                unlisten
+                pure nonCanceler 
+            )
+            Assert.equal result 2
+
+    suite "[stream] gate" do
+        test "gate" do
+            let a = newStreamSink Nothing
+            let b = newCellSink false Nothing
+            let c = gate (toCell b) (toStream a)
+            result <- makeAff (\cb -> do
+                unlisten <- listen c \value ->
+                    cb $ Right value 
+                send 4 a
+                send 3 a
+                send true b
                 send 2 a
                 unlisten
                 pure nonCanceler 
