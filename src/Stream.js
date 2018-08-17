@@ -58,3 +58,7 @@ exports.collectImpl = function (f, state, s) {
         return new Tuple2(record.value, record.state);
     });
 }
+
+exports.accumImpl = function (f, state, s) {
+    return s.accum(state, f);
+}

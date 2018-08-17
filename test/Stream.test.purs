@@ -19,7 +19,8 @@ import SodiumFRP.Stream (
     snapshot5,
     snapshot6,
     hold,
-    collect
+    collect,
+    accum
 )
 import SodiumFRP.Class (
     send, 
@@ -324,3 +325,40 @@ testStream = runTest do
                 unlisten
                 pure nonCanceler 
             Assert.equal (fromFoldable [2, 3]) results
+    
+    suite "[stream] accum" do
+        test "accum - one round" do
+            let a = newStreamSink Nothing
+            let b = accum
+                    (\x -> \state -> state + x)
+                    1 
+                    (toStream a)
+            results <- makeAff \cb -> do
+                refList <- Ref.new (Nil :: List Int)
+                unlisten <- listen b \value -> do
+                    Ref.modify_ (\xs -> snoc xs value) refList
+                    xs <- Ref.read refList
+                    if (length xs == 2) then (cb $ Right xs) else (pure unit)
+                send 1 a
+                unlisten
+                pure nonCanceler 
+
+            Assert.equal (fromFoldable [1, 2]) results
+        test "accum - multi round" do
+            let a = newStreamSink Nothing
+            let b = accum
+                    (\x -> \state -> state + x)
+                    1 
+                    (toStream a)
+            results <- makeAff \cb -> do
+                refList <- Ref.new (Nil :: List Int)
+                unlisten <- listen b \value -> do
+                    Ref.modify_ (\xs -> snoc xs value) refList
+                    xs <- Ref.read refList
+                    if (length xs == 3) then (cb $ Right xs) else (pure unit)
+                send 1 a
+                send 1 a
+                unlisten
+                pure nonCanceler 
+
+            Assert.equal (fromFoldable [1, 2, 3]) results

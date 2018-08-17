@@ -11,7 +11,8 @@ module SodiumFRP.Stream (
     snapshot5,
     snapshot6,
     hold,
-    collect
+    collect,
+    accum
 ) where
 
 import SodiumFRP.Class (
@@ -122,11 +123,22 @@ hold = runFn2 holdImpl
     is passed the input and the old state and returns the new state and output value.
     The function may construct FRP logic or use 'sample' in which case 
     it is equivalent to 'snapshot'ing the cell. 
-    Apart from this the function must be <em>referentially transparent</em>.
+    Apart from this the function must be referentially transparent.
 -}
 
 collect :: forall a b c. (a -> c -> {value :: b, state :: c}) -> c -> Stream a -> Stream b
 collect f = runFn3 collectImpl (mkFn2 f) 
+
+
+{-|
+    Accumulate on input event, outputting the new state each time.
+    The function may construct FRP logic or use 'sample' 
+    in which case it is equivalent to 'snapshot'ing the cell. 
+    Apart from this the function must be referentially transparent.
+-}
+
+accum :: forall a b. (a -> b -> b) -> b -> Stream a -> Cell b
+accum f = runFn3 accumImpl (mkFn2 f)
 
 -- Foreign imports
 
@@ -143,4 +155,5 @@ foreign import snapshot5Impl :: forall a b c d e f. Fn6 (Fn5 a b c d e f) (Cell 
 foreign import snapshot6Impl :: forall a b c d e f g. Fn7 (Fn6 a b c d e f g) (Cell b) (Cell c) (Cell d) (Cell e) (Cell f) (Stream a) (Stream g)
 foreign import holdImpl :: forall a. Fn2 a (Stream a) (Cell a)
 foreign import collectImpl :: forall a b c. Fn3 (Fn2 a c {value :: b, state :: c}) c (Stream a) (Stream b)
+foreign import accumImpl :: forall a b. Fn3 (Fn2 a b b) b (Stream a) (Cell b)
 
