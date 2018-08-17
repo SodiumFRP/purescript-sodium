@@ -2,17 +2,10 @@
 
 const Sodium = require("sodiumjs");
 
-
-const Cell = Sodium.Cell;
-const CellSink = Sodium.CellSink;
-const CellLoop = Sodium.CellLoop;
-
-const Stream = Sodium.Stream;
-const StreamSink = Sodium.StreamSink;
-const StreamLoop = Sodium.StreamLoop;
+const lambda1 = Sodium.lambda1;
 
 //Stream
 
 exports.mapLambda1StreamImpl = function (f, d, s) {
-    return s.map(Sodium.lambda1(f, d));
+    return s.map(lambda1(f, d));
 }
