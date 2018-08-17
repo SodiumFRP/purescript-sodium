@@ -27,3 +27,22 @@ exports.snapshot1Impl = function (c, s) {
     return s.snapshot1(c);
 }
 
+exports.snapshotImpl = function (fn, c, s) {
+    return s.snapshot(c, fn);
+}
+
+exports.snapshot3Impl = function (fn, c1, c2, s) {
+    return s.snapshot3(c1, c2, fn);
+}
+
+exports.snapshot4Impl = function (fn, c1, c2, c3, s) {
+    return s.snapshot4(c1, c2, c3, fn);
+}
+
+exports.snapshot5Impl = function (fn, c1, c2, c3, c4, s) {
+    return s.snapshot5(c1, c2, c3, c4, fn);
+}
+
+exports.snapshot6Impl = function (fn, c1, c2, c3, c4, c5, s) {
+    return s.snapshot6(c1, c2, c3, c4, c5, fn);
+}

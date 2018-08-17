@@ -12,7 +12,12 @@ import SodiumFRP.Stream (
     merge,
     filter,
     gate,
-    snapshot1
+    snapshot1,
+    snapshot,
+    snapshot3,
+    snapshot4,
+    snapshot5,
+    snapshot6
 )
 import SodiumFRP.Class (
     send, 
@@ -204,8 +209,94 @@ testStream = runTest do
             result <- makeAff (\cb -> do
                 unlisten <- listen c \value ->
                     cb $ Right value 
-                send 4 a
+                send 1 a
                 unlisten
                 pure nonCanceler 
             )
             Assert.equal result 2
+        test "snapshot" do
+            let a = newStreamSink Nothing
+            let b = newCell 2 Nothing
+            let c = snapshot (\x1 -> \x2 -> x1 + x2) b ((toStream a) :: Stream Int)
+            result <- makeAff (\cb -> do
+                unlisten <- listen c \value ->
+                    cb $ Right value 
+                send 1 a
+                unlisten
+                pure nonCanceler 
+            )
+            Assert.equal result 3
+        test "snapshot3" do
+            let a = newStreamSink Nothing
+            let b = newCell 2 Nothing
+            let c = newCell 3 Nothing
+            let d = snapshot3 
+                    (\x1 -> \x2 -> \x3 -> x1 + x2 + x3) 
+                    b c 
+                    ((toStream a) :: Stream Int)
+            result <- makeAff (\cb -> do
+                unlisten <- listen d \value ->
+                    cb $ Right value 
+                send 1 a
+                unlisten
+                pure nonCanceler 
+            )
+            Assert.equal result 6
+        test "snapshot4" do
+            let a = newStreamSink Nothing
+            let b = newCell 2 Nothing
+            let c = newCell 3 Nothing
+            let d = newCell 4 Nothing
+            let e = snapshot4 
+                    (\x1 -> \x2 -> \x3 -> \x4 -> x1 + x2 + x3 + x4) 
+                    b c d
+                    ((toStream a) :: Stream Int)
+            result <- makeAff (\cb -> do
+                unlisten <- listen e \value ->
+                    cb $ Right value 
+                send 1 a
+                unlisten
+                pure nonCanceler 
+            )
+            Assert.equal result 10 
+        test "snapshot5" do
+            let a = newStreamSink Nothing
+            let b = newCell 2 Nothing
+            let c = newCell 3 Nothing
+            let d = newCell 4 Nothing
+            let e = newCell 5 Nothing
+            let f = snapshot5 
+                    (\x1 -> \x2 -> \x3 -> \x4 -> \x5 ->
+                        x1 + x2 + x3 + x4 + x5
+                    ) 
+                    b c d e 
+                    ((toStream a) :: Stream Int)
+            result <- makeAff (\cb -> do
+                unlisten <- listen f \value ->
+                    cb $ Right value 
+                send 1 a
+                unlisten
+                pure nonCanceler 
+            )
+            Assert.equal result 15 
+        test "snapshot6" do
+            let a = newStreamSink Nothing
+            let b = newCell 2 Nothing
+            let c = newCell 3 Nothing
+            let d = newCell 4 Nothing
+            let e = newCell 5 Nothing
+            let f = newCell 6 Nothing
+            let g = snapshot6 
+                    (\x1 -> \x2 -> \x3 -> \x4 -> \x5 -> \x6 -> 
+                        x1 + x2 + x3 + x4 + x5 + x6
+                    ) 
+                    b c d e f
+                    ((toStream a) :: Stream Int)
+            result <- makeAff (\cb -> do
+                unlisten <- listen g \value ->
+                    cb $ Right value 
+                send 1 a
+                unlisten
+                pure nonCanceler 
+            )
+            Assert.equal result 21 
