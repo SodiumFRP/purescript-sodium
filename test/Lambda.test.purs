@@ -28,13 +28,13 @@ testLambda = runTest do
     suite "[lambda] basic tests" do
         test "single send with map" do
             let a = newStreamSink Nothing
-            let c = newCell 2 Nothing
-            let b = mapLambda1 
-                        ((\x -> x + (sample c)) :: Int -> Int) 
-                        [c]
+            let b = newCell 2 Nothing
+            let c = mapLambda1 
+                        ((\x -> x + (sample b)) :: Int -> Int) 
+                        [b]
                         (toStream a)
             result <- makeAff \cb -> do
-                unlisten <- listen b \value ->
+                unlisten <- listen c \value ->
                     cb $ Right value 
                 send 2 a
                 unlisten
