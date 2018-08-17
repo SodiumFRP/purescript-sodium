@@ -62,3 +62,7 @@ exports.collectImpl = function (f, state, s) {
 exports.accumImpl = function (f, state, s) {
     return s.accum(state, f);
 }
+
+exports.onceImpl = function(s) {
+    return s.once();
+}

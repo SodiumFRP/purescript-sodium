@@ -12,7 +12,8 @@ module SodiumFRP.Stream (
     snapshot6,
     hold,
     collect,
-    accum
+    accum,
+    once
 ) where
 
 import SodiumFRP.Class (
@@ -140,6 +141,14 @@ collect f = runFn3 collectImpl (mkFn2 f)
 accum :: forall a b. (a -> b -> b) -> b -> Stream a -> Cell b
 accum f = runFn3 accumImpl (mkFn2 f)
 
+{-|
+    Return a stream that outputs only one value: the next event of the
+    input stream, starting from the transaction in which once() was invoked.
+-}
+
+once :: forall a. Stream a -> Stream a
+once = onceImpl
+
 -- Foreign imports
 
 foreign import mapToImpl :: forall a b. Fn2 b (Stream a) (Stream b)
@@ -156,4 +165,4 @@ foreign import snapshot6Impl :: forall a b c d e f g. Fn7 (Fn6 a b c d e f g) (C
 foreign import holdImpl :: forall a. Fn2 a (Stream a) (Cell a)
 foreign import collectImpl :: forall a b c. Fn3 (Fn2 a c {value :: b, state :: c}) c (Stream a) (Stream b)
 foreign import accumImpl :: forall a b. Fn3 (Fn2 a b b) b (Stream a) (Cell b)
-
+foreign import onceImpl :: forall a. Stream a -> Stream a

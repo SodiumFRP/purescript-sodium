@@ -20,7 +20,8 @@ import SodiumFRP.Stream (
     snapshot6,
     hold,
     collect,
-    accum
+    accum,
+    once
 )
 import SodiumFRP.Class (
     send, 
@@ -362,3 +363,14 @@ testStream = runTest do
                 pure nonCanceler 
 
             Assert.equal (fromFoldable [1, 2, 3]) results
+    suite "[stream] once" do
+        test "once" do
+            let a = newStreamSink Nothing
+            let b = once (toStream a)
+            result <- makeAff \cb -> do
+                unlisten <- listen b \value ->
+                    cb $ Right value 
+                send 2 a
+                unlisten
+                pure nonCanceler 
+            Assert.equal result 2
