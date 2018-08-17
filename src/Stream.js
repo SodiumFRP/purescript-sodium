@@ -1,6 +1,7 @@
 "use strict";
+const Sodium = require("sodiumjs");
 
-
+const Tuple2 = Sodium.Tuple2;
 
 exports.mapToImpl = function(x, s) {
     return s.mapTo(x);
@@ -49,4 +50,11 @@ exports.snapshot6Impl = function (fn, c1, c2, c3, c4, c5, s) {
 
 exports.holdImpl = function (x, s) {
     return s.hold(x);
+}
+
+exports.collectImpl = function (f, state, s) {
+    return s.collect(state, function(x, state) {
+        var record = f(x, state);
+        return new Tuple2(record.value, record.state);
+    });
 }

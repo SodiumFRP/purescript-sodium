@@ -10,7 +10,8 @@ module SodiumFRP.Stream (
     snapshot4,
     snapshot5,
     snapshot6,
-    hold
+    hold,
+    collect
 ) where
 
 import SodiumFRP.Class (
@@ -116,6 +117,17 @@ snapshot6 f = runFn7 snapshot6Impl (mkFn6 f)
 hold :: forall a. a -> Stream a -> Cell a
 hold = runFn2 holdImpl
 
+{-|
+    Transform an event with a generalized state loop (a Mealy machine). The function
+    is passed the input and the old state and returns the new state and output value.
+    The function may construct FRP logic or use 'sample' in which case 
+    it is equivalent to 'snapshot'ing the cell. 
+    Apart from this the function must be <em>referentially transparent</em>.
+-}
+
+collect :: forall a b c. (a -> c -> {value :: b, state :: c}) -> c -> Stream a -> Stream b
+collect f = runFn3 collectImpl (mkFn2 f) 
+
 -- Foreign imports
 
 foreign import mapToImpl :: forall a b. Fn2 b (Stream a) (Stream b)
@@ -130,3 +142,5 @@ foreign import snapshot4Impl :: forall a b c d e. Fn5 (Fn4 a b c d e) (Cell b) (
 foreign import snapshot5Impl :: forall a b c d e f. Fn6 (Fn5 a b c d e f) (Cell b) (Cell c) (Cell d) (Cell e) (Stream a) (Stream f)
 foreign import snapshot6Impl :: forall a b c d e f g. Fn7 (Fn6 a b c d e f g) (Cell b) (Cell c) (Cell d) (Cell e) (Cell f) (Stream a) (Stream g)
 foreign import holdImpl :: forall a. Fn2 a (Stream a) (Cell a)
+foreign import collectImpl :: forall a b c. Fn3 (Fn2 a c {value :: b, state :: c}) c (Stream a) (Stream b)
+
