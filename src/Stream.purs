@@ -9,7 +9,8 @@ module SodiumFRP.Stream (
     snapshot3,
     snapshot4,
     snapshot5,
-    snapshot6
+    snapshot6,
+    hold
 ) where
 
 import SodiumFRP.Class (
@@ -104,6 +105,17 @@ snapshot5 f = runFn6 snapshot5Impl (mkFn5 f)
 snapshot6 :: forall a b c d e f g. (a -> b -> c -> d -> e -> f -> g) -> Cell b -> Cell c -> Cell d -> Cell e -> Cell f -> Stream a -> Stream g
 snapshot6 f = runFn7 snapshot6Impl (mkFn6 f)
 
+{-|
+    Create a "Cell" with the specified initial value, that is updated by this stream's event values.
+    There is an implicit delay: State updates caused by event firings don't become
+    visible as the cell's current value as viewed by 'snapshot' until the following transaction. 
+    To put this another way, 'snapshot' always sees the value of a cell as it was before
+    any state changes from the current transaction.
+-}
+
+hold :: forall a. a -> Stream a -> Cell a
+hold = runFn2 holdImpl
+
 -- Foreign imports
 
 foreign import mapToImpl :: forall a b. Fn2 b (Stream a) (Stream b)
@@ -117,3 +129,4 @@ foreign import snapshot3Impl :: forall a b c d. Fn4 (Fn3 a b c d) (Cell b) (Cell
 foreign import snapshot4Impl :: forall a b c d e. Fn5 (Fn4 a b c d e) (Cell b) (Cell c) (Cell d) (Stream a) (Stream e)
 foreign import snapshot5Impl :: forall a b c d e f. Fn6 (Fn5 a b c d e f) (Cell b) (Cell c) (Cell d) (Cell e) (Stream a) (Stream f)
 foreign import snapshot6Impl :: forall a b c d e f g. Fn7 (Fn6 a b c d e f g) (Cell b) (Cell c) (Cell d) (Cell e) (Cell f) (Stream a) (Stream g)
+foreign import holdImpl :: forall a. Fn2 a (Stream a) (Cell a)

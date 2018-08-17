@@ -17,7 +17,8 @@ import SodiumFRP.Stream (
     snapshot3,
     snapshot4,
     snapshot5,
-    snapshot6
+    snapshot6,
+    hold
 )
 import SodiumFRP.Class (
     send, 
@@ -300,3 +301,14 @@ testStream = runTest do
                 pure nonCanceler 
             )
             Assert.equal result 21 
+    suite "[stream] hold" do
+        test "hold" do
+            let a = (toStream $ newStreamSink Nothing) :: Stream Int
+            let b = hold 2 a 
+            result <- makeAff (\cb -> do
+                unlisten <- listen b \value ->
+                    cb $ Right value 
+                unlisten
+                pure nonCanceler 
+            )
+            Assert.equal result 2
