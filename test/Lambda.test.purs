@@ -7,9 +7,7 @@ import Data.Maybe (Maybe(Nothing))
 import Effect (Effect)
 import Effect.Aff (makeAff, nonCanceler)
 
-import SodiumFRP.Lambda (
-    mapLambda1
-)
+import SodiumFRP.Lambda
 import SodiumFRP.Cell (sample)
 
 import SodiumFRP.Dep (dep)
@@ -31,9 +29,11 @@ testLambda = runTest do
         test "single send with map" do
             let a = newStreamSink Nothing
             let b = newCell 2 Nothing
-            let c = mapLambda1 
-                        ((\x -> x + (sample b)) :: Int -> Int) 
-                        [dep b]
+            let c = mapd (
+                        lambda1
+                          ((\x -> x + (sample b)) :: Int -> Int) 
+                          [dep b]
+                        )
                         (toStream a)
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
