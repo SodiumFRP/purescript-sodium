@@ -7,6 +7,13 @@ import Data.Maybe (Maybe)
 import Data.Function.Uncurried (Fn2, runFn2, mkFn2)
 import Effect.Uncurried (EffectFn1, mkEffectFn1, EffectFn2, runEffectFn2)
 
+-- | Sodium Classes
+
+foreign import data Stream :: Type -> Type 
+foreign import data StreamSink :: Type -> Type 
+foreign import data Cell :: Type -> Type 
+foreign import data CellSink :: Type -> Type 
+
 -- Typeclasses
 
 -- | Listenable
@@ -23,20 +30,8 @@ class Sendable s where
     send :: forall a. a -> s a -> Effect Unit
 
 -- Stream 
-data Stream a = Stream a
-data StreamSink a = StreamSink a
-
-instance functorStream :: Functor Stream where
-    map = runFn2 mapStreamImpl
-
-instance listenStream :: Listenable Stream where
-    listen s cb = runEffectFn2 listenStreamImpl s (mkEffectFn1 cb)
-
-instance sendStream :: Sendable StreamSink where
-    send = runEffectFn2 sendStreamImpl
 
 -- | Create a new Stream
--- The optional value is a Vertex (internal use only?)
 newStream :: forall a. Stream a
 newStream = newStreamImpl
 
@@ -52,29 +47,18 @@ newStreamSink m =
 toStream :: forall a. StreamSink a -> Stream a
 toStream = toStreamImpl
 
-foreign import newStreamImpl :: forall a. Stream a
+instance functorStream :: Functor Stream where
+    map = runFn2 mapStreamImpl
 
-foreign import newStreamSinkImpl :: forall a. Nullable (Fn2 a a a) -> StreamSink a
-foreign import toStreamImpl :: forall a. StreamSink a -> Stream a
+instance listenStream :: Listenable Stream where
+    listen s cb = runEffectFn2 listenStreamImpl s (mkEffectFn1 cb)
 
-foreign import listenStreamImpl :: forall a. EffectFn2 (Stream a) (EffectFn1 a Unit) (Effect Unit)
-
-foreign import mapStreamImpl :: forall a b. Fn2 (a -> b) (Stream a) (Stream b)
-
-foreign import sendStreamImpl :: forall a. EffectFn2 a (StreamSink a) Unit
--- Cell
-data Cell a = Cell a
-data CellSink a = CellSink a
-
-instance functorCell :: Functor Cell where
-    map = runFn2 mapCellImpl
-
-instance listenCell :: Listenable Cell where
-    listen s cb = runEffectFn2 listenCellImpl s (mkEffectFn1 cb)
+instance sendStream :: Sendable StreamSink where
+    send = runEffectFn2 sendStreamImpl
 
 
-instance sendCell :: Sendable CellSink where
-    send = runEffectFn2 sendCellImpl
+
+-- | Cell
 
 -- | Create a new Cell
 newCell :: forall a. a -> Maybe (Stream a) -> Cell a
@@ -86,7 +70,31 @@ newCellSink a m = runFn2 newCellSinkImpl a (toNullable (mkFn2 <$> m))
 toCell :: forall a. CellSink a -> Cell a
 toCell = toCellImpl
 
+instance functorCell :: Functor Cell where
+    map = runFn2 mapCellImpl
 
+instance listenCell :: Listenable Cell where
+    listen s cb = runEffectFn2 listenCellImpl s (mkEffectFn1 cb)
+
+
+instance sendCell :: Sendable CellSink where
+    send = runEffectFn2 sendCellImpl
+
+
+
+-- Stream FFI
+foreign import newStreamImpl :: forall a. Stream a
+
+foreign import newStreamSinkImpl :: forall a. Nullable (Fn2 a a a) -> StreamSink a
+foreign import toStreamImpl :: forall a. StreamSink a -> Stream a
+
+foreign import listenStreamImpl :: forall a. EffectFn2 (Stream a) (EffectFn1 a Unit) (Effect Unit)
+
+foreign import mapStreamImpl :: forall a b. Fn2 (a -> b) (Stream a) (Stream b)
+
+foreign import sendStreamImpl :: forall a. EffectFn2 a (StreamSink a) Unit
+
+--  Cell FFI
 foreign import newCellImpl :: forall a. Fn2 a (Nullable (Stream a)) (Cell a)
 
 foreign import newCellSinkImpl :: forall a. Fn2 a (Nullable (Fn2 a a a)) (CellSink a)
