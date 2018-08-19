@@ -42,7 +42,7 @@ testLambda = runTest do
                 unlisten
                 pure nonCanceler 
             Assert.equal result 5
-        test "snapshot w/ lambda1" do
+        test "snapshot w/ lambda2" do
             let a = newStreamSink Nothing
             let b = newCell 2 Nothing
             let c = snapshotLambda
