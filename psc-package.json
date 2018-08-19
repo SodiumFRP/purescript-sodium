@@ -12,6 +12,8 @@
     "psci-support",
     "st",
     "test-unit",
-    "transformers"
+    "transformers",
+    "exists",
+    "unsafe-coerce"
   ]
 }

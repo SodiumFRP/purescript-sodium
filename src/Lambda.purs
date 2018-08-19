@@ -2,6 +2,8 @@ module SodiumFRP.Lambda where
 
 import SodiumFRP.Class(Stream)
 
+import SodiumFRP.Dep(Dep, unwrapDeps)
+
 import Prelude
 import Effect (Effect)
 import Data.Nullable (Nullable, toNullable)
@@ -19,11 +21,11 @@ import Effect.Uncurried (EffectFn1, mkEffectFn1, EffectFn2, runEffectFn2)
 
 -- | Lambda1
 class Lambda1 target where
-    mapLambda1 :: forall a b c. (a -> b) -> Array c -> target a -> target b
+    mapLambda1 :: forall a b. (a -> b) -> Array Dep -> target a -> target b
 
 -- | Stream
 instance lambda1Stream :: Lambda1 Stream where
-    mapLambda1 = runFn3 mapLambda1StreamImpl
+    mapLambda1 f deps = runFn3 mapLambda1StreamImpl f (unwrapDeps deps)
 
 
 foreign import mapLambda1StreamImpl :: forall a b c. Fn3 (a -> b) (Array c) (Stream a) (Stream b)

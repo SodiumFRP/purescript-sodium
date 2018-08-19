@@ -12,6 +12,8 @@ import SodiumFRP.Lambda (
 )
 import SodiumFRP.Cell (sample)
 
+import SodiumFRP.Dep (dep)
+
 import SodiumFRP.Class (
     listen, 
     newStreamSink, 
@@ -31,7 +33,7 @@ testLambda = runTest do
             let b = newCell 2 Nothing
             let c = mapLambda1 
                         ((\x -> x + (sample b)) :: Int -> Int) 
-                        [b]
+                        [dep b]
                         (toStream a)
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
