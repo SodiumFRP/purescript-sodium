@@ -14,7 +14,7 @@ foreign import data StreamSink :: Type -> Type
 foreign import data Cell :: Type -> Type 
 foreign import data CellSink :: Type -> Type 
 
--- Typeclasses
+-- Common Typeclasses
 
 -- | Listenable
 -- Listen for firings of this cell or event.
@@ -31,6 +31,9 @@ class Sendable s where
 
 -- Stream 
 
+class ToStream s where
+    toStream :: forall a. s a -> Stream a
+
 -- | Create a new Stream
 newStream :: forall a. Stream a
 newStream = newStreamImpl
@@ -44,8 +47,9 @@ newStreamSink m =
 
 -- | Convert a StreamSink to a Stream
 -- This is a free operation, just to help the type system
-toStream :: forall a. StreamSink a -> Stream a
-toStream = toStreamImpl
+
+instance streamSinkToStream :: ToStream StreamSink where
+    toStream = toStreamImpl
 
 instance functorStream :: Functor Stream where
     map = runFn2 mapStreamImpl
@@ -60,6 +64,9 @@ instance sendStream :: Sendable StreamSink where
 
 -- | Cell
 
+class ToCell c where
+    toCell :: forall a. c a -> Cell a
+
 -- | Create a new Cell
 newCell :: forall a. a -> Maybe (Stream a) -> Cell a
 newCell a s = runFn2 newCellImpl a (toNullable s)
@@ -67,15 +74,14 @@ newCell a s = runFn2 newCellImpl a (toNullable s)
 newCellSink :: forall a. a -> Maybe (a -> a -> a) -> CellSink a
 newCellSink a m = runFn2 newCellSinkImpl a (toNullable (mkFn2 <$> m))
 
-toCell :: forall a. CellSink a -> Cell a
-toCell = toCellImpl
+instance cellSinkToCell :: ToCell CellSink where
+    toCell = toCellImpl
 
 instance functorCell :: Functor Cell where
     map = runFn2 mapCellImpl
 
 instance listenCell :: Listenable Cell where
     listen s cb = runEffectFn2 listenCellImpl s (mkEffectFn1 cb)
-
 
 instance sendCell :: Sendable CellSink where
     send = runEffectFn2 sendCellImpl
