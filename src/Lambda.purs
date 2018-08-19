@@ -1,11 +1,17 @@
 module SodiumFRP.Lambda where
 
-import SodiumFRP.Class(Stream)
+import SodiumFRP.Class(
+    Stream,
+    StreamSink,
+    Cell,
+    CellSink
+)
 
 import Prelude
 import Effect (Effect)
 import Data.Nullable (Nullable, toNullable)
 import Data.Maybe (Maybe)
+import Unsafe.Coerce (unsafeCoerce)
 
 import Data.Function.Uncurried (
     Fn2, runFn2, mkFn2, 
@@ -15,11 +21,29 @@ import Data.Function.Uncurried (
     Fn6, runFn6, mkFn6,
     Fn7, runFn7
 )
-import Effect.Uncurried (EffectFn1, mkEffectFn1, EffectFn2, runEffectFn2)
+
+-- | Lambda wrappers require dependencies
+
+foreign import data Dep :: Type
+
+class IsDep target where
+    mkDep :: forall a. target a -> Dep
+
+instance isDepStream :: IsDep Stream where
+    mkDep = unsafeCoerce
+
+instance isDepCell :: IsDep Cell where
+    mkDep = unsafeCoerce
+
+instance isDepStreamSink :: IsDep StreamSink where
+    mkDep = unsafeCoerce
+
+instance isDepCellSink :: IsDep CellSink where
+    mkDep = unsafeCoerce
 
 -- | Lambda1
 class Lambda1 target where
-    mapLambda1 :: forall a b c. (a -> b) -> Array c -> target a -> target b
+    mapLambda1 :: forall a b. (a -> b) -> Array Dep -> target a -> target b
 
 -- | Stream
 instance lambda1Stream :: Lambda1 Stream where

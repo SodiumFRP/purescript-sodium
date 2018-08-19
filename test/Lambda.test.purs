@@ -8,7 +8,8 @@ import Effect (Effect)
 import Effect.Aff (makeAff, nonCanceler)
 
 import SodiumFRP.Lambda (
-    mapLambda1
+    mapLambda1,
+    mkDep
 )
 import SodiumFRP.Cell (sample)
 
@@ -26,12 +27,12 @@ import Test.Unit.Main (runTest)
 testLambda :: Effect Unit
 testLambda = runTest do
     suite "[lambda] basic tests" do
-        test "single send with map" do
+        test "[mkDep] single send with map" do
             let a = newStreamSink Nothing
             let b = newCell 2 Nothing
             let c = mapLambda1 
                         ((\x -> x + (sample b)) :: Int -> Int) 
-                        [b]
+                        [mkDep a, mkDep b]
                         (toStream a)
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
@@ -40,3 +41,4 @@ testLambda = runTest do
                 unlisten
                 pure nonCanceler 
             Assert.equal result 4
+

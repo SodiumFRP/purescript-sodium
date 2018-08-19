@@ -6,12 +6,14 @@
     "aff",
     "aff-coroutines",
     "effect",
+    "exists",
     "maybe",
     "nullable",
     "prelude",
     "psci-support",
     "st",
     "test-unit",
-    "transformers"
+    "transformers",
+    "unsafe-coerce"
   ]
 }
