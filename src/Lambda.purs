@@ -31,6 +31,21 @@ data Lambda f = Lambda f (Array Dep)
 lambda1 :: forall a b. (a -> b) -> Array Dep -> Lambda (a -> b)
 lambda1 = Lambda
 
+lambda2 :: forall a b c. (a -> b -> c) -> Array Dep -> Lambda (a -> b -> c)
+lambda2 = Lambda
+
+lambda3 :: forall a b c d. (a -> b -> c -> d) -> Array Dep -> Lambda (a -> b -> c -> d)
+lambda3 = Lambda
+
+lambda4 :: forall a b c d e. (a -> b -> c -> d -> e) -> Array Dep -> Lambda (a -> b -> c -> d -> e)
+lambda4 = Lambda
+
+lambda5 :: forall a b c d e f. (a -> b -> c -> d -> e -> f) -> Array Dep -> Lambda (a -> b -> c -> d -> e -> f)
+lambda5 = Lambda
+
+lambda6 :: forall a b c d e f g. (a -> b -> c -> d -> e -> f -> g) -> Array Dep -> Lambda (a -> b -> c -> d -> e -> f -> g)
+lambda6 = Lambda
+
 foreign import sodiumLambda1Impl :: forall a b. Fn2 (a -> b) (Array SodiumObject) (SodiumLambda1 a b)
 foreign import sodiumLambda2Impl :: forall a b c. Fn2 (Fn2 a b c) (Array SodiumObject) (SodiumLambda2 a b c)
 foreign import sodiumLambda3Impl :: forall a b c d. Fn2 (Fn3 a b c d) (Array SodiumObject) (SodiumLambda3 a b c d)
