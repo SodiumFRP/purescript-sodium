@@ -66,3 +66,7 @@ exports.accumImpl = function (f, state, s) {
 exports.onceImpl = function(s) {
     return s.once();
 }
+
+exports.loopStreamImpl = function(s, sLoop) {
+    sLoop.loop(s);
+}

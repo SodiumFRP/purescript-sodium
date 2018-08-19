@@ -13,11 +13,15 @@ module SodiumFRP.Stream (
     hold,
     collect,
     accum,
-    once
+    once,
+    loop
 ) where
+
+import Prelude (Unit)
 
 import SodiumFRP.Class (
     Stream,
+    StreamLoop,
     Cell
 )
 
@@ -30,6 +34,9 @@ import Data.Function.Uncurried (
     Fn7, runFn7
 )
 
+import Effect (Effect)
+
+import Effect.Uncurried (EffectFn2, runEffectFn2)
 -- | Transform the stream's event values into the specified constant value.
 -- b is a constant value.
 mapTo :: forall a b. b -> Stream a -> Stream b
@@ -149,6 +156,14 @@ accum f = runFn3 accumImpl (mkFn2 f)
 once :: forall a. Stream a -> Stream a
 once = onceImpl
 
+{-|
+    Resolve the loop to specify what the StreamLoop was a forward reference to. 
+    It must be invoked inside the same transaction as the place where the StreamLoop is used.
+    This requires you to create an explicit transaction 
+-}
+loop :: forall a. Stream a -> StreamLoop a -> Effect Unit
+loop = runEffectFn2 loopStreamImpl
+
 -- Foreign imports
 
 foreign import mapToImpl :: forall a b. Fn2 b (Stream a) (Stream b)
@@ -166,3 +181,5 @@ foreign import holdImpl :: forall a. Fn2 a (Stream a) (Cell a)
 foreign import collectImpl :: forall a b c. Fn3 (Fn2 a c {value :: b, state :: c}) c (Stream a) (Stream b)
 foreign import accumImpl :: forall a b. Fn3 (Fn2 a b b) b (Stream a) (Cell b)
 foreign import onceImpl :: forall a. Stream a -> Stream a
+
+foreign import loopStreamImpl :: forall a. EffectFn2 (Stream a) (StreamLoop a) Unit
