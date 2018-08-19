@@ -21,6 +21,8 @@ import SodiumFRP.Class (
     Cell
 )
 
+import SodiumFRP.Lambda
+
 import Data.Function.Uncurried (
     Fn2, runFn2, mkFn2, 
     Fn3, runFn3, mkFn3, 
@@ -92,8 +94,8 @@ snapshot1 = runFn2 snapshot1Impl
     before any state changes from the current transaction.
 -}
 
-snapshot :: forall a b c. (a -> b -> c) -> Cell b -> Stream a -> Stream c
-snapshot f = runFn3 snapshotImpl (mkFn2 f)
+snapshot :: forall a b c lam. Lambda2 lam a b c => lam -> Cell b -> Stream a -> Stream c
+snapshot f = runFn3 snapshotImpl (sodiumLambda2 f)
          
 snapshot3 :: forall a b c d. (a -> b -> c -> d) -> Cell b -> Cell c -> Stream a -> Stream d
 snapshot3 f = runFn4 snapshot3Impl (mkFn3 f)
@@ -157,7 +159,7 @@ foreign import mergeImpl :: forall a. Fn3 (Fn2 a a a) (Stream a) (Stream a) (Str
 foreign import filterImpl :: forall a. Fn2 (a -> Boolean) (Stream a) (Stream a)
 foreign import gateImpl :: forall a. Fn2 (Cell Boolean) (Stream a) (Stream a)
 foreign import snapshot1Impl :: forall a. Fn2 (Cell a) (Stream a) (Stream a)
-foreign import snapshotImpl :: forall a b c. Fn3 (Fn2 a b c) (Cell b) (Stream a) (Stream c)
+foreign import snapshotImpl :: forall a b c. Fn3 (SodiumLambda2 a b c) (Cell b) (Stream a) (Stream c)
 foreign import snapshot3Impl :: forall a b c d. Fn4 (Fn3 a b c d) (Cell b) (Cell c) (Stream a) (Stream d)
 foreign import snapshot4Impl :: forall a b c d e. Fn5 (Fn4 a b c d e) (Cell b) (Cell c) (Cell d) (Stream a) (Stream e)
 foreign import snapshot5Impl :: forall a b c d e f. Fn6 (Fn5 a b c d e f) (Cell b) (Cell c) (Cell d) (Cell e) (Stream a) (Stream f)
