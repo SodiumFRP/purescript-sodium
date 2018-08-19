@@ -6,7 +6,6 @@
     "aff",
     "aff-coroutines",
     "effect",
-    "exists",
     "maybe",
     "nullable",
     "prelude",
