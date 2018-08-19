@@ -43,6 +43,21 @@ foreign import sodiumCellMapImpl :: forall a b. Fn2 (SodiumLambda1 a b) (Cell a)
 sodiumLambda1 :: forall lam a b. Lambda1 lam a b => lam -> (SodiumLambda1 a b)
 sodiumLambda1 lam = runFn2 sodiumLambda1Impl (apply lam) (unwrapDeps $ deps lam)
 
+sodiumLambda2 :: forall lam a b c. Lambda2 lam a b c => lam -> SodiumLambda2 a b c
+sodiumLambda2 lam = runFn2 sodiumLambda2Impl (mkFn2 $ apply2 lam) (unwrapDeps $ deps lam)
+
+sodiumLambda3 :: forall lam a b c d. Lambda3 lam a b c d => lam -> SodiumLambda3 a b c d
+sodiumLambda3 lam = runFn2 sodiumLambda3Impl (mkFn3 $ apply3 lam) (unwrapDeps $ deps lam)
+
+sodiumLambda4 :: forall lam a b c d e. Lambda4 lam a b c d e => lam -> SodiumLambda4 a b c d e
+sodiumLambda4 lam = runFn2 sodiumLambda4Impl (mkFn4 $ apply4 lam) (unwrapDeps $ deps lam)
+
+sodiumLambda5 :: forall lam a b c d e f. Lambda5 lam a b c d e f => lam -> SodiumLambda5 a b c d e f
+sodiumLambda5 lam = runFn2 sodiumLambda5Impl (mkFn5 $ apply5 lam) (unwrapDeps $ deps lam)
+
+sodiumLambda6 :: forall lam a b c d e f g. Lambda6 lam a b c d e f g => lam -> SodiumLambda6 a b c d e f g
+sodiumLambda6 lam = runFn2 sodiumLambda6Impl (mkFn6 $ apply6 lam) (unwrapDeps $ deps lam)
+
 class HasDeps lam where
     deps :: lam -> Array Dep
 
