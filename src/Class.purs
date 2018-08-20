@@ -80,6 +80,21 @@ instance functorStream :: Functor Stream where
 
 foreign import mapStreamImpl :: forall a b. Fn2 (a -> b) (Stream a) (Stream b)
 
+-- | Monoid
+
+
+instance semigroupStream :: Semigroup (Stream a) where
+    append = concatStream
+
+concatStream :: forall a. Stream a -> Stream a -> Stream a
+concatStream = runFn2 concatStreamImpl
+
+foreign import concatStreamImpl :: forall a. Fn2 (Stream a) (Stream a) (Stream a)
+instance monoidStream :: Monoid (Stream a) where
+    mempty = emptyImpl 
+
+foreign import emptyImpl :: forall a. Stream a 
+
 -- | Listen
 instance listenStream :: Listenable Stream where
     listen s cb = runEffectFn2 listenStreamImpl s (mkEffectFn1 cb)

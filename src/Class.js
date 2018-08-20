@@ -10,6 +10,11 @@ const StreamLoop = Sodium.StreamLoop;
 
 //Stream
 
+
+exports.emptyImpl = function() {
+    return new Stream();
+}
+
 exports.newStreamImpl = function() {
     return new StreamSink();
 }
@@ -43,6 +48,12 @@ exports.sendStreamImpl = function(a, streamSink) {
     streamSink.send(a);
 }
 
+exports.concatStreamImpl = function(other, s) {
+   return s.merge(other, function(left, right) {
+       //TODO: should test if left is a semigroup and concat that...?
+       return left;
+   });
+}
 
 //Cell
 

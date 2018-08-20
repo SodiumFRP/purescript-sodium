@@ -70,3 +70,4 @@ exports.onceImpl = function(s) {
 exports.loopStreamImpl = function(s, sLoop) {
     sLoop.loop(s);
 }
+
