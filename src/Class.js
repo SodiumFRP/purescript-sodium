@@ -11,9 +11,6 @@ const StreamLoop = Sodium.StreamLoop;
 //Stream
 
 
-exports.emptyImpl = function() {
-    return new Stream();
-}
 
 exports.newStreamImpl = function() {
     return new StreamSink();
@@ -27,9 +24,6 @@ exports.newStreamSinkImpl = function(mergeFn) {
     return new StreamSink(mergeFn);
 }
 
-exports.mapStreamImpl = function (f, s) {
-    return s.map(f);
-}
 
 
 exports.listenStreamImpl = function(stream, listener) {
@@ -48,11 +42,18 @@ exports.sendStreamImpl = function(a, streamSink) {
     streamSink.send(a);
 }
 
+//To satisfy category laws, re-use fantasy-land implementations
+//Additional benefit is potential for runtime checking via Z
+exports.mapStreamImpl = function (f, s) {
+    return s['fantasy-land/map'](f);
+}
+
 exports.concatStreamImpl = function(other, s) {
-   return s.merge(other, function(left, right) {
-       //TODO: should test if left is a semigroup and concat that...?
-       return left;
-   });
+    return s['fantasy-land/concat'] (other);
+}
+
+exports.emptyImpl = function() {
+    return s['fantasy-land/empty'] ();
 }
 
 //Cell
