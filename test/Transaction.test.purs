@@ -25,7 +25,7 @@ testTransaction = runTest do
         test "loop in transaction" do
             result <- liftEffect $ runTransaction (do
                 l <- newCellLoop
-                let c = newCell 2 Nothing
+                c <- newCell 2 Nothing
                 loop c l
                 pure $ sample (toCell l)
             )

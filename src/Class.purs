@@ -4,8 +4,9 @@ import Prelude
 import Effect (Effect)
 import Data.Nullable (Nullable, toNullable)
 import Data.Maybe (Maybe)
-import Data.Function.Uncurried (Fn1, Fn2, runFn2, mkFn2)
-import Effect.Uncurried (EffectFn1, mkEffectFn1, EffectFn2, runEffectFn2)
+import Data.Function.Uncurried (Fn2, runFn2, mkFn2)
+import Effect.Uncurried (runEffectFn1, EffectFn1, mkEffectFn1, EffectFn2, runEffectFn2)
+import Unsafe.Coerce (unsafeCoerce)
 
 -- | Sodium Classes
 
@@ -33,109 +34,112 @@ class Sendable s where
 
 
 -- Stream 
-class ToStream s where
-    toStream :: forall a. s a -> Stream a
 
 
 -- | Create a new Stream
-newStream :: forall a. Unit -> Stream a
+newStream :: forall a. Effect (Stream a)
 newStream = newStreamImpl
+
+foreign import newStreamImpl :: forall a. Effect (Stream a)
 
 -- | Create a new StreamSink
 -- StreamSinks can be used to send events
 -- The optional value is merging function
-newStreamSink :: forall a. Maybe (a -> a -> a) -> StreamSink a
+newStreamSink :: forall a. Maybe (a -> a -> a) -> Effect (StreamSink a)
 newStreamSink m = 
-    newStreamSinkImpl (toNullable (mkFn2 <$> m))
+    runEffectFn1 newStreamSinkImpl (toNullable (mkFn2 <$> m))
 
+foreign import newStreamSinkImpl :: forall a. EffectFn1 (Nullable (Fn2 a a a)) (StreamSink a)
 
 -- | A forward reference for a 'Stream' equivalent to the Stream that is referenced.
+-- Must be run in an explicit Transaction
 newStreamLoop :: forall a. Effect (StreamLoop a)
 newStreamLoop = newStreamLoopImpl
 
 
+foreign import newStreamLoopImpl :: forall a. Effect (StreamLoop a)
 
--- | Convert a StreamSink to a Stream
+-- | Convert a Stream
 -- This is a free operation, just to help the type system
 
-instance streamSinkToStream :: ToStream StreamSink where
-    toStream = streamSinkToStreamImpl
+class SodiumStream s where
+    toStream :: forall a. s a -> Stream a
 
-instance streamLoopToStream :: ToStream StreamLoop where
-    toStream = streamLoopToStreamImpl
+instance streamToStream :: SodiumStream Stream where
+    toStream = identity
 
+instance streamSinkToStream :: SodiumStream StreamSink where
+    toStream = unsafeCoerce 
+
+instance streamLoopToStream :: SodiumStream StreamLoop where
+    toStream = unsafeCoerce 
+
+-- | Functor
 instance functorStream :: Functor Stream where
     map = runFn2 mapStreamImpl
 
+foreign import mapStreamImpl :: forall a b. Fn2 (a -> b) (Stream a) (Stream b)
+
+-- | Listen
 instance listenStream :: Listenable Stream where
     listen s cb = runEffectFn2 listenStreamImpl s (mkEffectFn1 cb)
 
+foreign import listenStreamImpl :: forall a. EffectFn2 (Stream a) (EffectFn1 a Unit) (Effect Unit)
+
+-- | Send
 instance sendStream :: Sendable StreamSink where
     send = runEffectFn2 sendStreamImpl
 
-
+foreign import sendStreamImpl :: forall a. EffectFn2 a (StreamSink a) Unit
 
 -- | Cell
 
-class ToCell c where
-    toCell :: forall a. c a -> Cell a
-
 -- | Create a new Cell
-newCell :: forall a. a -> Maybe (Stream a) -> Cell a
-newCell a s = runFn2 newCellImpl a (toNullable s)
+newCell :: forall a. a -> Maybe (Stream a) -> Effect (Cell a)
+newCell a s = runEffectFn2 newCellImpl a (toNullable s)
 
-newCellSink :: forall a. a -> Maybe (a -> a -> a) -> CellSink a
-newCellSink a m = runFn2 newCellSinkImpl a (toNullable (mkFn2 <$> m))
+foreign import newCellImpl :: forall a. EffectFn2 a (Nullable (Stream a)) (Cell a)
+
+newCellSink :: forall a. a -> Maybe (a -> a -> a) -> Effect (CellSink a)
+newCellSink a m = runEffectFn2 newCellSinkImpl a (toNullable (mkFn2 <$> m))
+
+foreign import newCellSinkImpl :: forall a. EffectFn2 a (Nullable (Fn2 a a a)) (CellSink a)
 
 -- | A forward reference for a 'Cell' equivalent to the Cell that is referenced.
+-- Must be run in an explicit Transaction
 newCellLoop :: forall a. Effect (CellLoop a)
 newCellLoop = newCellLoopImpl
 
+foreign import newCellLoopImpl :: forall a. Effect (CellLoop a)
 
-instance cellSinkToCell :: ToCell CellSink where
-    toCell = cellSinkToCellImpl
+-- | Convert a Cell
 
-instance cellLoopToCell :: ToCell CellLoop where
-    toCell = cellLoopToCellImpl
+class SodiumCell c where
+    toCell :: forall a. c a -> Cell a
 
+instance cellToCell :: SodiumCell Cell where
+    toCell = identity
+
+instance cellSinkToCell :: SodiumCell CellSink where
+    toCell = unsafeCoerce 
+
+instance cellLoopToCell :: SodiumCell CellLoop where
+    toCell = unsafeCoerce 
+
+-- | Functor
 instance functorCell :: Functor Cell where
     map = runFn2 mapCellImpl
 
+foreign import mapCellImpl :: forall a b. Fn2 (a -> b) (Cell a) (Cell b)
+
+-- | Listen
 instance listenCell :: Listenable Cell where
     listen s cb = runEffectFn2 listenCellImpl s (mkEffectFn1 cb)
 
+foreign import listenCellImpl :: forall a. EffectFn2 (Cell a) (EffectFn1 a Unit) (Effect Unit)
+-- | Send
 instance sendCell :: Sendable CellSink where
     send = runEffectFn2 sendCellImpl
 
--- Stream FFI
-foreign import newStreamImpl :: forall a. Fn1 (Unit) (Stream a)
-
-foreign import newStreamLoopImpl :: forall a. Effect (StreamLoop a)
-foreign import newStreamSinkImpl :: forall a. Nullable (Fn2 a a a) -> StreamSink a
-foreign import streamSinkToStreamImpl :: forall a. StreamSink a -> Stream a
-foreign import streamLoopToStreamImpl :: forall a. StreamLoop a -> Stream a
-
-foreign import listenStreamImpl :: forall a. EffectFn2 (Stream a) (EffectFn1 a Unit) (Effect Unit)
-
-foreign import mapStreamImpl :: forall a b. Fn2 (a -> b) (Stream a) (Stream b)
-
-foreign import sendStreamImpl :: forall a. EffectFn2 a (StreamSink a) Unit
-
---  Cell FFI
-foreign import newCellImpl :: forall a. Fn2 a (Nullable (Stream a)) (Cell a)
-
-
-foreign import newCellSinkImpl :: forall a. Fn2 a (Nullable (Fn2 a a a)) (CellSink a)
-
-foreign import newCellLoopImpl :: forall a. Effect (CellLoop a)
-
-foreign import cellSinkToCellImpl :: forall a. CellSink a -> Cell a
-foreign import cellLoopToCellImpl :: forall a. CellLoop a -> Cell a
-
-
-foreign import listenCellImpl :: forall a. EffectFn2 (Cell a) (EffectFn1 a Unit) (Effect Unit)
-
-foreign import mapCellImpl :: forall a b. Fn2 (a -> b) (Cell a) (Cell b)
-
-
 foreign import sendCellImpl :: forall a. EffectFn2 a (CellSink a) Unit
+

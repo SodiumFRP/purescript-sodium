@@ -6,6 +6,7 @@ import Data.Either (Either(Right))
 import Data.Maybe (Maybe(Nothing))
 import Effect (Effect)
 import Effect.Aff (makeAff, nonCanceler)
+import Effect.Class (liftEffect)
 
 import SodiumFRP.Lambda (
     mapLambda1,
@@ -29,8 +30,8 @@ testLambda :: Effect Unit
 testLambda = runTest do
     suite "[lambda] basic tests" do
         test "map w/ lambda1" do
-            let a = newStreamSink Nothing
-            let b = newCell 2 Nothing
+            a <- liftEffect $ newStreamSink Nothing
+            b <- liftEffect $ newCell 2 Nothing
             let c = mapLambda1 
                         ((\x -> x + (sample b)) :: Int -> Int) 
                         [mkDep a, mkDep b]
@@ -43,8 +44,8 @@ testLambda = runTest do
                 pure nonCanceler 
             Assert.equal result 5
         test "snapshot w/ lambda2" do
-            let a = newStreamSink Nothing
-            let b = newCell 2 Nothing
+            a <- liftEffect $ newStreamSink Nothing
+            b <- liftEffect $ newCell 2 Nothing
             let c = snapshotLambda
                         ((\x -> \y -> x + y + (sample b))) 
                         [mkDep a, mkDep b]

@@ -9,7 +9,7 @@ import Test.Lambda (testLambda)
 
 main :: Effect Unit
 main = do
-    testTransaction
     testStream
     testCell 
     testLambda
+    testTransaction

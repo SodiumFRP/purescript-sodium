@@ -5,6 +5,7 @@ import Prelude
 import Data.Either (Either(Right))
 import Data.Maybe (Maybe(Nothing))
 import Effect (Effect)
+import Effect.Class (liftEffect)
 import Effect.Aff (makeAff, nonCanceler)
 
 import Effect.Ref as Ref
@@ -28,7 +29,7 @@ testCell :: Effect Unit
 testCell = runTest do
     suite "[cell] basic tests" do
         test "constant" do
-            let a = newCell 2 Nothing
+            a <- liftEffect $ newCell 2 Nothing
             result <- makeAff (\cb -> do
                 unlisten <- listen a \value ->
                     cb $ Right value 
@@ -37,7 +38,7 @@ testCell = runTest do
             )
             Assert.equal result 2
         test "map" do
-            let a = newCell 2 Nothing
+            a <- liftEffect $ newCell 2 Nothing
             let b = (\x -> x + x) <$> a
             result <- makeAff (\cb -> do
                 unlisten <- listen b \value ->
@@ -48,7 +49,7 @@ testCell = runTest do
             Assert.equal result 4
 
         test "sink" do
-            let a = newCellSink 2 Nothing
+            a <- liftEffect $ newCellSink 2 Nothing
             let b = toCell a
             results <- makeAff (\cb -> do
                 refList <- Ref.new (Nil :: List Int)
@@ -64,5 +65,5 @@ testCell = runTest do
 
 
         test "sample" do
-            let a = newCell 2 Nothing
+            a <- liftEffect $ newCell 2 Nothing
             Assert.equal (sample a) 2

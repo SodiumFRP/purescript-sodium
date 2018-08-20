@@ -22,14 +22,6 @@ exports.newStreamSinkImpl = function(mergeFn) {
     return new StreamSink(mergeFn);
 }
 
-exports.streamSinkToStreamImpl = function(s) {
-    return s; 
-}
-
-exports.streamLoopToStreamImpl = function(s) {
-    return s;
-}
-
 exports.mapStreamImpl = function (f, s) {
     return s.map(f);
 }
@@ -64,14 +56,6 @@ exports.newCellLoopImpl = function() {
 
 exports.newCellSinkImpl = function(x, mergeFn) {
     return new CellSink(x, mergeFn);
-}
-
-exports.cellSinkToCellImpl = function(c) {
-    return c;
-}
-
-exports.cellLoopToCellImpl = function(c) {
-    return c;
 }
 
 exports.mapCellImpl = function (f, c) {
