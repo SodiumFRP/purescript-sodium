@@ -28,11 +28,10 @@ import SodiumFRP.Class (
     send, 
     listen, 
     newStreamSink, 
-    toStream,
     newCellSink,
-    toCell,
     newCell,
-    Stream
+    StreamSink,
+    toStream
 )
 
 import SodiumFRP.Transaction (runTransaction)
@@ -48,7 +47,7 @@ testStream = runTest do
         test "single send" do
             a <- liftEffect $ newStreamSink Nothing
             result <- makeAff \cb -> do
-                unlisten <- listen (toStream a) \value ->
+                unlisten <- listen a \value ->
                     cb $ Right value 
                 send 2 a
                 unlisten
@@ -82,7 +81,7 @@ testStream = runTest do
 
         test "mapTo" do
             a <- liftEffect $ newStreamSink Nothing
-            let b = mapTo 4 (toStream a)
+            let b = mapTo 4 a
             result <- makeAff \cb -> do
                 unlisten <- listen b \value ->
                     cb $ Right value 
@@ -123,7 +122,7 @@ testStream = runTest do
         test "orElse" do
             a <- liftEffect $ newStreamSink Nothing 
             b <- liftEffect $ newStreamSink Nothing
-            let c = orElse (toStream a) (toStream b)
+            let c = orElse a b
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
                     cb $ Right value 
@@ -138,7 +137,7 @@ testStream = runTest do
         test "merge left" do
             a <- liftEffect $ newStreamSink Nothing 
             b <- liftEffect $ newStreamSink Nothing
-            let c = merge (\l -> \r -> l) (toStream a) (toStream b)
+            let c = merge (\l -> \r -> l) a b
             result <- makeAff \cb -> do
                 unlisten <- listen c \value -> 
                     cb $ Right value 
@@ -153,7 +152,7 @@ testStream = runTest do
         test "merge right" do
             a <- liftEffect $ newStreamSink Nothing 
             b <- liftEffect $ newStreamSink Nothing
-            let c = merge (\l -> \r -> r) (toStream a) (toStream b)
+            let c = merge (\l -> \r -> r) a b
             result <- makeAff \cb -> do
                 unlisten <- listen c \value -> 
                     cb $ Right value 
@@ -168,7 +167,7 @@ testStream = runTest do
     suite "[stream] filter" do
         test "filter" do
             a <- liftEffect $ newStreamSink Nothing
-            let b = filter (\x -> x == 2) (toStream a)
+            let b = filter (\x -> x == 2) a
             result <- makeAff \cb -> do
                 unlisten <- listen b \value ->
                     cb $ Right value 
@@ -183,7 +182,7 @@ testStream = runTest do
         test "gate" do
             a <- liftEffect $ newStreamSink Nothing
             b <- liftEffect $ newCellSink false Nothing
-            let c = gate (toCell b) (toStream a)
+            let c = gate b a
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
                     cb $ Right value 
@@ -199,7 +198,7 @@ testStream = runTest do
         test "snapshot1" do
             a <- liftEffect $ newStreamSink Nothing
             b <- liftEffect $ newCell 2 Nothing
-            let c = snapshot1 b ((toStream a) :: Stream Int)
+            let c = snapshot1 b (a :: StreamSink Int)
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
                     cb $ Right value 
@@ -210,7 +209,7 @@ testStream = runTest do
         test "snapshot" do
             a <- liftEffect $ newStreamSink Nothing
             b <- liftEffect $ newCell 2 Nothing
-            let c = snapshot (\x1 -> \x2 -> x1 + x2) b ((toStream a) :: Stream Int)
+            let c = snapshot (\x1 -> \x2 -> x1 + x2) b (a :: StreamSink Int)
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
                     cb $ Right value 
@@ -224,8 +223,7 @@ testStream = runTest do
             c <- liftEffect $ newCell 3 Nothing
             let d = snapshot3 
                     (\x1 -> \x2 -> \x3 -> x1 + x2 + x3) 
-                    b c 
-                    ((toStream a) :: Stream Int)
+                    b c a 
             result <- makeAff \cb -> do
                 unlisten <- listen d \value ->
                     cb $ Right value 
@@ -240,8 +238,7 @@ testStream = runTest do
             d <- liftEffect $ newCell 4 Nothing
             let e = snapshot4 
                     (\x1 -> \x2 -> \x3 -> \x4 -> x1 + x2 + x3 + x4) 
-                    b c d
-                    ((toStream a) :: Stream Int)
+                    b c d a
             result <- makeAff \cb -> do
                 unlisten <- listen e \value ->
                     cb $ Right value 
@@ -259,8 +256,7 @@ testStream = runTest do
                     (\x1 -> \x2 -> \x3 -> \x4 -> \x5 ->
                         x1 + x2 + x3 + x4 + x5
                     ) 
-                    b c d e 
-                    ((toStream a) :: Stream Int)
+                    b c d e a
             result <- makeAff \cb -> do
                 unlisten <- listen f \value ->
                     cb $ Right value 
@@ -279,8 +275,7 @@ testStream = runTest do
                     (\x1 -> \x2 -> \x3 -> \x4 -> \x5 -> \x6 -> 
                         x1 + x2 + x3 + x4 + x5 + x6
                     ) 
-                    b c d e f
-                    ((toStream a) :: Stream Int)
+                    b c d e f a
             result <- makeAff \cb -> do
                 unlisten <- listen g \value ->
                     cb $ Right value 
@@ -291,7 +286,7 @@ testStream = runTest do
     suite "[stream] hold" do
         test "hold" do
             a <- liftEffect $ newStreamSink Nothing
-            let b = hold 2 (toStream a) 
+            let b = hold 2 a 
             result <- makeAff \cb -> do
                 unlisten <- listen b \value ->
                     cb $ Right value 
@@ -303,8 +298,7 @@ testStream = runTest do
             a <- liftEffect $ newStreamSink Nothing
             let b = collect
                     (\x -> \state -> {value: x + state, state: state + 1})
-                    1 
-                    (toStream a)
+                    1 a
             result <- makeAff \cb -> do
                 unlisten <- listen b \value ->
                     cb $ Right value 
@@ -315,7 +309,7 @@ testStream = runTest do
 
         test "collect - multi round" do
             a <- liftEffect $ newStreamSink Nothing
-            let b = collect (\x -> \state -> {value: x + state, state: state + 1}) 1 (toStream a)
+            let b = collect (\x -> \state -> {value: x + state, state: state + 1}) 1 a 
             results <- makeAff \cb -> do
                 refList <- Ref.new (Nil :: List Int)
                 unlisten <- listen b \value -> do
@@ -333,8 +327,7 @@ testStream = runTest do
             a <- liftEffect $ newStreamSink Nothing
             let b = accum
                     (\x -> \state -> state + x)
-                    1 
-                    (toStream a)
+                    1 a
             results <- makeAff \cb -> do
                 refList <- Ref.new (Nil :: List Int)
                 unlisten <- listen b \value -> do
@@ -350,8 +343,7 @@ testStream = runTest do
             a <- liftEffect $ newStreamSink Nothing
             let b = accum
                     (\x -> \state -> state + x)
-                    1 
-                    (toStream a)
+                    1 a
             results <- makeAff \cb -> do
                 refList <- Ref.new (Nil :: List Int)
                 unlisten <- listen b \value -> do
@@ -367,7 +359,7 @@ testStream = runTest do
     suite "[stream] once" do
         test "once" do
             a <- liftEffect $ newStreamSink Nothing
-            let b = once (toStream a)
+            let b = once a 
             result <- makeAff \cb -> do
                 unlisten <- listen b \value ->
                     cb $ Right value 

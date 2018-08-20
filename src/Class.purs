@@ -84,6 +84,12 @@ foreign import mapStreamImpl :: forall a b. Fn2 (a -> b) (Stream a) (Stream b)
 instance listenStream :: Listenable Stream where
     listen s cb = runEffectFn2 listenStreamImpl s (mkEffectFn1 cb)
 
+instance listenStreamSink :: Listenable StreamSink where
+    listen s cb = runEffectFn2 listenStreamImpl (toStream s) (mkEffectFn1 cb)
+
+instance listenStreamLoop :: Listenable StreamLoop where
+    listen s cb = runEffectFn2 listenStreamImpl (toStream s) (mkEffectFn1 cb)
+
 foreign import listenStreamImpl :: forall a. EffectFn2 (Stream a) (EffectFn1 a Unit) (Effect Unit)
 
 -- | Send
@@ -134,7 +140,13 @@ foreign import mapCellImpl :: forall a b. Fn2 (a -> b) (Cell a) (Cell b)
 
 -- | Listen
 instance listenCell :: Listenable Cell where
-    listen s cb = runEffectFn2 listenCellImpl s (mkEffectFn1 cb)
+    listen c cb = runEffectFn2 listenCellImpl c (mkEffectFn1 cb)
+
+instance listenCellSink :: Listenable CellSink where
+    listen c cb = runEffectFn2 listenCellImpl (toCell c) (mkEffectFn1 cb)
+
+instance listenCellLoop :: Listenable CellLoop where
+    listen c cb = runEffectFn2 listenCellImpl (toCell c) (mkEffectFn1 cb)
 
 foreign import listenCellImpl :: forall a. EffectFn2 (Cell a) (EffectFn1 a Unit) (Effect Unit)
 -- | Send

@@ -50,7 +50,7 @@ testLambda = runTest do
                         ((\x -> \y -> x + y + (sample b))) 
                         [mkDep a, mkDep b]
                         (b)
-                        (toStream a)
+                        a 
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
                     cb $ Right value 

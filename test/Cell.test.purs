@@ -18,7 +18,6 @@ import SodiumFRP.Class (
     listen, 
     newCell,
     newCellSink,
-    toCell,
     send
 )
 import Test.Unit (suite, test)
@@ -50,10 +49,9 @@ testCell = runTest do
 
         test "sink" do
             a <- liftEffect $ newCellSink 2 Nothing
-            let b = toCell a
             results <- makeAff (\cb -> do
                 refList <- Ref.new (Nil :: List Int)
-                unlisten <- listen b \value -> do
+                unlisten <- listen a \value -> do
                     Ref.modify_ (\xs -> snoc xs value) refList
                     xs <- Ref.read refList
                     if (length xs == 2) then (cb $ Right xs) else (pure unit)
