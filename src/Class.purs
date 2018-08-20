@@ -50,7 +50,7 @@ newStreamSink m =
 
 
 -- | A forward reference for a 'Stream' equivalent to the Stream that is referenced.
-newStreamLoop :: forall a. Unit -> StreamLoop a
+newStreamLoop :: forall a. Effect (StreamLoop a)
 newStreamLoop = newStreamLoopImpl
 
 
@@ -88,7 +88,7 @@ newCellSink :: forall a. a -> Maybe (a -> a -> a) -> CellSink a
 newCellSink a m = runFn2 newCellSinkImpl a (toNullable (mkFn2 <$> m))
 
 -- | A forward reference for a 'Cell' equivalent to the Cell that is referenced.
-newCellLoop :: forall a. Unit -> CellLoop a
+newCellLoop :: forall a. Effect (CellLoop a)
 newCellLoop = newCellLoopImpl
 
 
@@ -109,8 +109,8 @@ instance sendCell :: Sendable CellSink where
 
 -- Stream FFI
 foreign import newStreamImpl :: forall a. Fn1 (Unit) (Stream a)
-foreign import newStreamLoopImpl :: forall a. Fn1 (Unit) (StreamLoop a)
 
+foreign import newStreamLoopImpl :: forall a. Effect (StreamLoop a)
 foreign import newStreamSinkImpl :: forall a. Nullable (Fn2 a a a) -> StreamSink a
 foreign import streamSinkToStreamImpl :: forall a. StreamSink a -> Stream a
 foreign import streamLoopToStreamImpl :: forall a. StreamLoop a -> Stream a
@@ -121,16 +121,17 @@ foreign import mapStreamImpl :: forall a b. Fn2 (a -> b) (Stream a) (Stream b)
 
 foreign import sendStreamImpl :: forall a. EffectFn2 a (StreamSink a) Unit
 
-
 --  Cell FFI
 foreign import newCellImpl :: forall a. Fn2 a (Nullable (Stream a)) (Cell a)
 
-foreign import newCellLoopImpl :: forall a. Fn1 (Unit) (CellLoop a)
 
 foreign import newCellSinkImpl :: forall a. Fn2 a (Nullable (Fn2 a a a)) (CellSink a)
 
+foreign import newCellLoopImpl :: forall a. Effect (CellLoop a)
+
 foreign import cellSinkToCellImpl :: forall a. CellSink a -> Cell a
 foreign import cellLoopToCellImpl :: forall a. CellLoop a -> Cell a
+
 
 foreign import listenCellImpl :: forall a. EffectFn2 (Cell a) (EffectFn1 a Unit) (Effect Unit)
 

@@ -3,7 +3,7 @@ module Test.Transaction (testTransaction) where
 import Prelude
 
 import SodiumFRP.Transaction (runTransaction)
-import SodiumFRP.Class (newCellLoop, newCell, CellLoop, toCell)
+import SodiumFRP.Class (newCellLoop, newCell, toCell)
 import SodiumFRP.Cell (loop, sample)
 
 import Data.Maybe (Maybe(Nothing))
@@ -21,9 +21,10 @@ testTransaction = runTest do
               pure 2
             )
             Assert.equal result 2
+
         test "loop in transaction" do
             result <- liftEffect $ runTransaction (do
-                let l = (newCellLoop unit) :: CellLoop Int
+                l <- newCellLoop
                 let c = newCell 2 Nothing
                 loop c l
                 pure $ sample (toCell l)
