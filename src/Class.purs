@@ -66,7 +66,7 @@ class SodiumStream s where
     toStream :: forall a. s a -> Stream a
 
 instance streamToStream :: SodiumStream Stream where
-    toStream = identity
+    toStream = unsafeCoerce 
 
 instance streamSinkToStream :: SodiumStream StreamSink where
     toStream = unsafeCoerce 
@@ -118,7 +118,7 @@ class SodiumCell c where
     toCell :: forall a. c a -> Cell a
 
 instance cellToCell :: SodiumCell Cell where
-    toCell = identity
+    toCell = unsafeCoerce 
 
 instance cellSinkToCell :: SodiumCell CellSink where
     toCell = unsafeCoerce 
