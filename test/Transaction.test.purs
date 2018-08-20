@@ -3,9 +3,9 @@ module Test.Transaction (testTransaction) where
 import Prelude
 
 import SodiumFRP.Transaction (runTransaction)
-import SodiumFRP.Class (newCellLoop, newCell, toCell)
+import SodiumFRP.Class (newCellLoop, newCell, newStream, newStreamLoop)
 import SodiumFRP.Cell (loop, sample)
-
+import SodiumFRP.Stream as StreamFn
 import Data.Maybe (Maybe(Nothing))
 import Effect (Effect)
 import Effect.Class (liftEffect)
@@ -22,11 +22,20 @@ testTransaction = runTest do
             )
             Assert.equal result 2
 
-        test "loop in transaction" do
+        test "cell loop in transaction" do
             result <- liftEffect $ runTransaction (do
                 l <- newCellLoop
                 c <- newCell 2 Nothing
                 loop c l
-                pure $ sample (toCell l)
+                pure $ sample l 
             )
             Assert.equal result 2
+        
+        test "stream loop in transaction" do
+            result <- liftEffect $ runTransaction (do
+                l <- newStreamLoop
+                s <- newStream 
+                StreamFn.loop s l
+                pure unit 
+            )
+            pure unit
