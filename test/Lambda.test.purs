@@ -31,7 +31,7 @@ testLambda = runTest do
     suite "[lambda] basic tests" do
         test "map w/ lambda1" do
             a <- liftEffect $ newStreamSink Nothing
-            b <- liftEffect $ newCell 2 Nothing
+            let b = newCell 2 Nothing
             let c = mapLambda1 
                         ((\x -> x + (sample b)) :: Int -> Int) 
                         [mkDep a, mkDep b]
@@ -45,7 +45,7 @@ testLambda = runTest do
             Assert.equal result 5
         test "snapshot w/ lambda2" do
             a <- liftEffect $ newStreamSink Nothing
-            b <- liftEffect $ newCell 2 Nothing
+            let b = newCell 2 Nothing
             let c = snapshotLambda
                         ((\x -> \y -> x + y + (sample b))) 
                         [mkDep a, mkDep b]

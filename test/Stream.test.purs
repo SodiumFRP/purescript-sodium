@@ -197,7 +197,7 @@ testStream = runTest do
     suite "[stream] snapshot" do
         test "snapshot1" do
             a <- liftEffect $ newStreamSink Nothing
-            b <- liftEffect $ newCell 2 Nothing
+            let b = newCell 2 Nothing
             let c = snapshot1 b (a :: StreamSink Int)
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
@@ -208,7 +208,7 @@ testStream = runTest do
             Assert.equal result 2
         test "snapshot" do
             a <- liftEffect $ newStreamSink Nothing
-            b <- liftEffect $ newCell 2 Nothing
+            let b = newCell 2 Nothing
             let c = snapshot (\x1 -> \x2 -> x1 + x2) b (a :: StreamSink Int)
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
@@ -219,8 +219,8 @@ testStream = runTest do
             Assert.equal result 3
         test "snapshot3" do
             a <- liftEffect $ newStreamSink Nothing
-            b <- liftEffect $ newCell 2 Nothing
-            c <- liftEffect $ newCell 3 Nothing
+            let b = newCell 2 Nothing
+            let c = newCell 3 Nothing
             let d = snapshot3 
                     (\x1 -> \x2 -> \x3 -> x1 + x2 + x3) 
                     b c a 
@@ -233,9 +233,9 @@ testStream = runTest do
             Assert.equal result 6
         test "snapshot4" do
             a <- liftEffect $ newStreamSink Nothing
-            b <- liftEffect $ newCell 2 Nothing
-            c <- liftEffect $ newCell 3 Nothing
-            d <- liftEffect $ newCell 4 Nothing
+            let b = newCell 2 Nothing
+            let c = newCell 3 Nothing
+            let d = newCell 4 Nothing
             let e = snapshot4 
                     (\x1 -> \x2 -> \x3 -> \x4 -> x1 + x2 + x3 + x4) 
                     b c d a
@@ -248,10 +248,10 @@ testStream = runTest do
             Assert.equal result 10 
         test "snapshot5" do
             a <- liftEffect $ newStreamSink Nothing
-            b <- liftEffect $ newCell 2 Nothing
-            c <- liftEffect $ newCell 3 Nothing
-            d <- liftEffect $ newCell 4 Nothing
-            e <- liftEffect $ newCell 5 Nothing
+            let b = newCell 2 Nothing
+            let c = newCell 3 Nothing
+            let d = newCell 4 Nothing
+            let e = newCell 5 Nothing
             let f = snapshot5 
                     (\x1 -> \x2 -> \x3 -> \x4 -> \x5 ->
                         x1 + x2 + x3 + x4 + x5
@@ -266,11 +266,11 @@ testStream = runTest do
             Assert.equal result 15 
         test "snapshot6" do
             a <- liftEffect $ newStreamSink Nothing
-            b <- liftEffect $ newCell 2 Nothing
-            c <- liftEffect $ newCell 3 Nothing
-            d <- liftEffect $ newCell 4 Nothing
-            e <- liftEffect $ newCell 5 Nothing
-            f <- liftEffect $ newCell 6 Nothing
+            let b = newCell 2 Nothing
+            let c = newCell 3 Nothing
+            let d = newCell 4 Nothing
+            let e = newCell 5 Nothing
+            let f = newCell 6 Nothing
             let g = snapshot6 
                     (\x1 -> \x2 -> \x3 -> \x4 -> \x5 -> \x6 -> 
                         x1 + x2 + x3 + x4 + x5 + x6

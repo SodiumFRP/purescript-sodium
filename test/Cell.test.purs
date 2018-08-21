@@ -28,7 +28,7 @@ testCell :: Effect Unit
 testCell = runTest do
     suite "[cell] basic tests" do
         test "constant" do
-            a <- liftEffect $ newCell 2 Nothing
+            let a = newCell 2 Nothing
             result <- makeAff (\cb -> do
                 unlisten <- listen a \value ->
                     cb $ Right value 
@@ -37,7 +37,7 @@ testCell = runTest do
             )
             Assert.equal result 2
         test "map" do
-            a <- liftEffect $ newCell 2 Nothing
+            let a = newCell 2 Nothing
             let b = (\x -> x + x) <$> a
             result <- makeAff (\cb -> do
                 unlisten <- listen b \value ->
@@ -63,5 +63,5 @@ testCell = runTest do
 
 
         test "sample" do
-            a <- liftEffect $ newCell 2 Nothing
+            let a = newCell 2 Nothing
             Assert.equal (sample a) 2

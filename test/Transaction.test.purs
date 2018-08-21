@@ -25,7 +25,7 @@ testTransaction = runTest do
         test "cell loop in transaction" do
             result <- liftEffect $ runTransaction (do
                 l <- newCellLoop
-                c <- newCell 2 Nothing
+                let c = newCell 2 Nothing
                 loop c l
                 pure $ sample l 
             )
@@ -34,7 +34,7 @@ testTransaction = runTest do
         test "stream loop in transaction" do
             result <- liftEffect $ runTransaction (do
                 l <- newStreamLoop
-                s <- newStream 
+                let s = newStream 
                 StreamFn.loop s l
                 pure unit 
             )
