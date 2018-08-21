@@ -2,16 +2,9 @@ module Test.Categories (testCategories) where
 
 import Prelude
 
-import SodiumFRP.Class (
-    listen, 
-    newCell,
-    newCellSink,
-    send
-)
 
 import Effect (Effect)
 import Test.Unit (suite, test)
-import Test.Unit.Assert as Assert
 import Test.Unit.Main (runTest)
 
 import Test.Unit.QuickCheck (quickCheck)

@@ -17,18 +17,19 @@ module SodiumFRP.Stream (
     loop
 ) where
 
-import Prelude (Unit)
-
 import SodiumFRP.Class (
     Stream,
     StreamLoop,
-    Cell,
-    class SodiumStream,
-    class SodiumCell,
     toStream,
-    toCell
+    class SodiumStream,
+    Cell,
+    toCell,
+    class SodiumCell
 )
 
+import Prelude 
+import Effect (Effect)
+import Effect.Uncurried (EffectFn2, runEffectFn2)
 import Data.Function.Uncurried (
     Fn2, runFn2, mkFn2, 
     Fn3, runFn3, mkFn3, 
@@ -38,9 +39,8 @@ import Data.Function.Uncurried (
     Fn7, runFn7
 )
 
-import Effect (Effect)
 
-import Effect.Uncurried (EffectFn2, runEffectFn2)
+
 -- | Transform the stream's event values into the specified constant value.
 -- b is a constant value.
 mapTo :: forall a b s. (SodiumStream s) => b -> s a -> Stream b
