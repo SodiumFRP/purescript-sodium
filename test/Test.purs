@@ -6,6 +6,7 @@ import Test.Stream (testStream)
 import Test.Transaction (testTransaction)
 import Test.Cell (testCell)
 import Test.Lambda (testLambda)
+import Test.Categories (testCategories)
 
 main :: Effect Unit
 main = do
@@ -13,3 +14,4 @@ main = do
     testCell 
     testLambda
     testTransaction
+    testCategories
