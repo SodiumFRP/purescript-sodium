@@ -11,6 +11,7 @@ import Effect.Class (liftEffect)
 import SodiumFRP.Lambda (
     mapLambda1,
     snapshotLambda,
+    liftLambda,
     mkDep
 )
 import SodiumFRP.Cell (sample)
@@ -55,6 +56,19 @@ testLambda = runTest do
                 unlisten <- listen c \value ->
                     cb $ Right value 
                 send 3 a
+                unlisten
+                pure nonCanceler 
+            Assert.equal result 7
+        test "lift w/ lambda2" do
+            let b = newCell 2 Nothing
+            let c = liftLambda
+                        ((\x y -> x + y + (sample b))) 
+                        [mkDep b]
+                        (b)
+                        (newCell 3 Nothing) 
+            result <- makeAff \cb -> do
+                unlisten <- listen c \value ->
+                    cb $ Right value 
                 unlisten
                 pure nonCanceler 
             Assert.equal result 7

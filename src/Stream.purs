@@ -115,8 +115,6 @@ snapshot4 f c1 c2 c3 s = runFn5 snapshot4Impl (mkFn4 f) (toCell c1) (toCell c2) 
 snapshot5 :: forall a b c d e f cel str. (SodiumStream str) => (SodiumCell cel) => (a -> b -> c -> d -> e -> f) -> cel b -> cel c -> cel d -> cel e -> str a -> Stream f
 snapshot5 f c1 c2 c3 c4 s = runFn6 snapshot5Impl (mkFn5 f) (toCell c1) (toCell c2) (toCell c3) (toCell c4) (toStream s)
 
-
-
 snapshot6 :: forall a b c d e f g cel str. (SodiumStream str) => (SodiumCell cel) => (a -> b -> c -> d -> e -> f -> g) -> cel b -> cel c -> cel d -> cel e -> cel f -> str a -> Stream g
 snapshot6 f c1 c2 c3 c4 c5 s = runFn7 snapshot6Impl (mkFn6 f) (toCell c1) (toCell c2) (toCell c3) (toCell c4) (toCell c5) (toStream s)
 

@@ -11,7 +11,12 @@ import Effect.Aff (makeAff, nonCanceler)
 import Effect.Ref as Ref
 import Data.List (List(Nil), snoc, length, fromFoldable)
 import SodiumFRP.Cell (
-    sample
+    sample,
+    lift,
+    lift3,
+    lift4,
+    lift5,
+    lift6
 )
 
 import SodiumFRP.Class (
@@ -61,7 +66,72 @@ testCell = runTest do
             )
             Assert.equal (fromFoldable [2, 4]) results
 
-
         test "sample" do
             let a = newCell 2 Nothing
             Assert.equal (sample a) 2
+    suite "[cell] lift" do
+        test "lift" do
+            let c = lift
+                    (\x1 -> \x2 -> x1 + x2)
+                    (newCell 2 Nothing)
+                    (newCell 1 Nothing)
+            result <- makeAff \cb -> do
+                unlisten <- listen c \value ->
+                    cb $ Right value 
+                unlisten
+                pure nonCanceler 
+            Assert.equal result 3
+        test "lift3" do
+            let c = lift3
+                    (\x1 x2 x3 -> x1 + x2 + x3)
+                    (newCell 3 Nothing)
+                    (newCell 2 Nothing)
+                    (newCell 1 Nothing)
+            result <- makeAff \cb -> do
+                unlisten <- listen c \value ->
+                    cb $ Right value 
+                unlisten
+                pure nonCanceler 
+            Assert.equal result 6
+        test "lift4" do
+            let c = lift4
+                    (\x1 x2 x3 x4 -> x1 + x2 + x3 + x4)
+                    (newCell 4 Nothing)
+                    (newCell 3 Nothing)
+                    (newCell 2 Nothing)
+                    (newCell 1 Nothing)
+            result <- makeAff \cb -> do
+                unlisten <- listen c \value ->
+                    cb $ Right value 
+                unlisten
+                pure nonCanceler 
+            Assert.equal result 10
+        test "lift5" do
+            let c = lift5
+                    (\x1 x2 x3 x4 x5 -> x1 + x2 + x3 + x4 + x5)
+                    (newCell 5 Nothing)
+                    (newCell 4 Nothing)
+                    (newCell 3 Nothing)
+                    (newCell 2 Nothing)
+                    (newCell 1 Nothing)
+            result <- makeAff \cb -> do
+                unlisten <- listen c \value ->
+                    cb $ Right value 
+                unlisten
+                pure nonCanceler 
+            Assert.equal result 15
+        test "lift6" do
+            let c = lift6
+                    (\x1 x2 x3 x4 x5 x6 -> x1 + x2 + x3 + x4 + x5 + x6)
+                    (newCell 6 Nothing)
+                    (newCell 5 Nothing)
+                    (newCell 4 Nothing)
+                    (newCell 3 Nothing)
+                    (newCell 2 Nothing)
+                    (newCell 1 Nothing)
+            result <- makeAff \cb -> do
+                unlisten <- listen c \value ->
+                    cb $ Right value 
+                unlisten
+                pure nonCanceler 
+            Assert.equal result 21 
