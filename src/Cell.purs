@@ -19,6 +19,7 @@ import Prelude
 import Effect (Effect)
 import Effect.Uncurried (EffectFn2, runEffectFn2)
 import Data.Function.Uncurried (
+    Fn1, runFn1,
     Fn2, mkFn2, 
     Fn3, runFn3, mkFn3, 
     Fn4, runFn4, mkFn4, 
@@ -30,9 +31,9 @@ import Data.Function.Uncurried (
 -- | Sample 
 
 sample :: forall a c. (SodiumCell c) => c a -> a
-sample c = sampleImpl (toCell c)
+sample c = runFn1 sampleImpl (toCell c)
 
-foreign import sampleImpl :: forall a. Cell a -> a
+foreign import sampleImpl :: forall a. Fn1 (Cell a) (a)
 
 {-| Loop
 
@@ -69,3 +70,9 @@ foreign import lift3Impl :: forall a b c d. Fn4 (Fn3 a b c d) (Cell b) (Cell c) 
 foreign import lift4Impl :: forall a b c d e. Fn5 (Fn4 a b c d e) (Cell b) (Cell c) (Cell d) (Cell a) (Cell e)
 foreign import lift5Impl :: forall a b c d e f. Fn6 (Fn5 a b c d e f) (Cell b) (Cell c) (Cell d) (Cell e) (Cell a) (Cell f)
 foreign import lift6Impl :: forall a b c d e f g. Fn7 (Fn6 a b c d e f g) (Cell b) (Cell c) (Cell d) (Cell e) (Cell f) (Cell a) (Cell g)
+
+{-
+    Switch
+-}
+
+--switchC :: forall a. Cell (Cell a) -> Cell a

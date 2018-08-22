@@ -31,6 +31,7 @@ import Prelude
 import Effect (Effect)
 import Effect.Uncurried (EffectFn2, runEffectFn2)
 import Data.Function.Uncurried (
+    Fn1, runFn1,
     Fn2, runFn2, mkFn2, 
     Fn3, runFn3, mkFn3, 
     Fn4, runFn4, mkFn4, 
@@ -158,7 +159,7 @@ accum f x s = runFn3 accumImpl (mkFn2 f) x (toStream s)
 -}
 
 once :: forall a s. (SodiumStream s) => s a -> Stream a
-once s = onceImpl (toStream s)
+once s = runFn1 onceImpl (toStream s)
 
 {-|
     Resolve the loop to specify what the StreamLoop was a forward reference to. 
@@ -184,6 +185,5 @@ foreign import snapshot6Impl :: forall a b c d e f g. Fn7 (Fn6 a b c d e f g) (C
 foreign import holdImpl :: forall a. Fn2 a (Stream a) (Cell a)
 foreign import collectImpl :: forall a b c. Fn3 (Fn2 a c {value :: b, state :: c}) c (Stream a) (Stream b)
 foreign import accumImpl :: forall a b. Fn3 (Fn2 a b b) b (Stream a) (Cell b)
-foreign import onceImpl :: forall a. Stream a -> Stream a
-
+foreign import onceImpl :: forall a. Fn1 (Stream a) (Stream a)
 foreign import loopStreamImpl :: forall a. EffectFn2 (Stream a) (StreamLoop a) Unit
