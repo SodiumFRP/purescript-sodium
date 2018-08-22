@@ -16,14 +16,18 @@ import SodiumFRP.Cell (
     lift3,
     lift4,
     lift5,
-    lift6
+    lift6,
+    switchC,
+    switchS
 )
 
 import SodiumFRP.Class (
     listen, 
     newCell,
     newCellSink,
-    send
+    send,
+    newStreamSink,
+    toStream
 )
 import Test.Unit (suite, test)
 import Test.Unit.Assert as Assert
@@ -135,3 +139,22 @@ testCell = runTest do
                 unlisten
                 pure nonCanceler 
             Assert.equal result 21 
+    suite "[cell] switch" do
+        test "switchC" do
+            let c = switchC $ newCell (newCell 2 Nothing) Nothing
+            result <- makeAff \cb -> do
+                unlisten <- listen c \value ->
+                    cb $ Right value 
+                unlisten
+                pure nonCanceler 
+            Assert.equal result 2
+        test "switchS" do
+            s1 <- liftEffect $ newStreamSink Nothing
+            let s2 = switchS $ newCell (toStream s1) Nothing
+            result <- makeAff \cb -> do
+                unlisten <- listen s2 \value ->
+                    cb $ Right value 
+                send 2 s1
+                unlisten
+                pure nonCanceler 
+            Assert.equal result 2

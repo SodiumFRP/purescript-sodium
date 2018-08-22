@@ -5,14 +5,17 @@ module SodiumFRP.Cell (
     lift3,
     lift4,
     lift5,
-    lift6
+    lift6,
+    switchC,
+    switchS
 ) where
 
 import SodiumFRP.Class(
     Cell,
     CellLoop,
     toCell,
-    class SodiumCell
+    class SodiumCell,
+    Stream
 )
 
 import Prelude
@@ -75,4 +78,11 @@ foreign import lift6Impl :: forall a b c d e f g. Fn7 (Fn6 a b c d e f g) (Cell 
     Switch
 -}
 
---switchC :: forall a. Cell (Cell a) -> Cell a
+switchC :: forall a c. (SodiumCell c) => c (Cell a) -> Cell a
+switchC c = runFn1 switchCImpl (toCell c) 
+
+switchS :: forall a c. (SodiumCell c) => c (Stream a) -> Stream a
+switchS c = runFn1 switchSImpl (toCell c) 
+
+foreign import switchCImpl :: forall a. Fn1 (Cell (Cell a)) (Cell a)
+foreign import switchSImpl :: forall a. Fn1 (Cell (Stream a)) (Stream a)

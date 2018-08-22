@@ -1,6 +1,6 @@
-
 "use strict";
 
+const Sodium = require("sodiumjs");
 
 exports.sampleImpl = function(c) {
     return c.sample();
@@ -25,4 +25,12 @@ exports.lift5Impl = function (fn, c1, c2, c3, c4, c) {
 }
 exports.lift6Impl = function (fn, c1, c2, c3, c4, c5, c) {
     return c.lift6(c1, c2, c3, c4, c5, fn);
+}
+
+exports.switchCImpl = function(c) {
+    return Sodium.Cell.switchC(c);
+}
+
+exports.switchSImpl = function(c) {
+    return Sodium.Cell.switchS(c);
 }
