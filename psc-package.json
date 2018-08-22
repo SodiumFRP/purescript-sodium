@@ -11,6 +11,7 @@
     "numbers",
     "prelude",
     "psci-support",
+    "quickcheck-laws",
     "st",
     "test-unit",
     "transformers",
