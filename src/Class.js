@@ -86,6 +86,5 @@ exports.mapCellImpl = function (f, c) {
 }
 
 exports.applyImpl = function(cf, c) {
-    return c['fantasy-land/ap'](cf)
-    return Sodium.Cell.apply(cf, c);
+    return c['fantasy-land/ap'](cf);
 }
