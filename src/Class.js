@@ -82,5 +82,10 @@ exports.concatStreamImpl = function(other, s) {
 
 //Cell
 exports.mapCellImpl = function (f, c) {
-    return c.map(f);
+    return c['fantasy-land/map'](f);
+}
+
+exports.applyImpl = function(cf, c) {
+    return c['fantasy-land/ap'](cf)
+    return Sodium.Cell.apply(cf, c);
 }

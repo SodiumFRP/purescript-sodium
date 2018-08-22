@@ -86,3 +86,4 @@ switchS c = runFn1 switchSImpl (toCell c)
 
 foreign import switchCImpl :: forall a. Fn1 (Cell (Cell a)) (Cell a)
 foreign import switchSImpl :: forall a. Fn1 (Cell (Stream a)) (Stream a)
+

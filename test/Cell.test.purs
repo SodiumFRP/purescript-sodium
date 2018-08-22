@@ -4,6 +4,7 @@ import Prelude
 
 import Data.Either (Either(Right))
 import Data.Maybe (Maybe(Nothing))
+import Data.Number.Format (toString)
 import Effect (Effect)
 import Effect.Class (liftEffect)
 import Effect.Aff (makeAff, nonCanceler)
@@ -158,3 +159,13 @@ testCell = runTest do
                 unlisten
                 pure nonCanceler 
             Assert.equal result 2
+    suite "[cell] apply" do
+        test "apply" do
+            let cf = newCell \x -> toString x  
+            let c = apply cf (newCell 4.2)
+            result <- makeAff \cb -> do
+                unlisten <- listen c \value ->
+                    cb $ Right value 
+                unlisten
+                pure nonCanceler 
+            Assert.equal result "4.2" 

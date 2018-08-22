@@ -34,3 +34,4 @@ exports.switchCImpl = function(c) {
 exports.switchSImpl = function(c) {
     return Sodium.Cell.switchS(c);
 }
+

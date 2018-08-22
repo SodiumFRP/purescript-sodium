@@ -167,3 +167,13 @@ instance functorCell :: Functor Cell where
     map = runFn2 mapCellImpl
 
 foreign import mapCellImpl :: forall a b. Fn2 (a -> b) (Cell a) (Cell b)
+
+
+{-
+    Apply
+-}
+
+instance applyCell :: Apply Cell where
+    apply = runFn2 applyImpl
+
+foreign import applyImpl :: forall a b. Fn2 (Cell (a -> b)) (Cell a) (Cell b)
