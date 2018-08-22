@@ -32,7 +32,7 @@ testLambda = runTest do
     suite "[lambda] basic tests" do
         test "map w/ lambda1" do
             a <- liftEffect $ newStreamSink Nothing
-            let b = newCell 2 Nothing
+            let b = newCell 2
             let c = mapLambda1 
                         ((\x -> x + (sample b)) :: Int -> Int) 
                         [mkDep a, mkDep b]
@@ -46,7 +46,7 @@ testLambda = runTest do
             Assert.equal result 5
         test "snapshot w/ lambda2" do
             a <- liftEffect $ newStreamSink Nothing
-            let b = newCell 2 Nothing
+            let b = newCell 2
             let c = snapshotLambda
                         ((\x -> \y -> x + y + (sample b))) 
                         [mkDep a, mkDep b]
@@ -60,12 +60,12 @@ testLambda = runTest do
                 pure nonCanceler 
             Assert.equal result 7
         test "lift w/ lambda2" do
-            let b = newCell 2 Nothing
+            let b = newCell 2
             let c = liftLambda
                         ((\x y -> x + y + (sample b))) 
                         [mkDep b]
                         (b)
-                        (newCell 3 Nothing) 
+                        (newCell 3)
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
                     cb $ Right value 

@@ -6,7 +6,6 @@ import SodiumFRP.Transaction (runTransaction)
 import SodiumFRP.Class (newCellLoop, newCell, newStream, newStreamLoop)
 import SodiumFRP.Cell (loopCell, sample)
 import SodiumFRP.Stream (loopStream) 
-import Data.Maybe (Maybe(Nothing))
 import Effect (Effect)
 import Effect.Class (liftEffect)
 import Test.Unit (suite, test)
@@ -25,7 +24,7 @@ testTransaction = runTest do
         test "cell loop in transaction" do
             result <- liftEffect $ runTransaction (do
                 l <- newCellLoop
-                let c = newCell 2 Nothing
+                let c = newCell 2
                 loopCell c l
                 pure $ sample l 
             )

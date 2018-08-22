@@ -29,7 +29,7 @@ import Effect.Uncurried (runEffectFn1, mkEffectFn1, EffectFn1, EffectFn2, runEff
 import Unsafe.Coerce (unsafeCoerce)
 import Data.Nullable (Nullable, toNullable)
 import Data.Maybe (Maybe)
-import Data.Function.Uncurried ( Fn0, runFn0, Fn2, runFn2, mkFn2)
+import Data.Function.Uncurried ( Fn0, runFn0, Fn1, runFn1, Fn2, runFn2, mkFn2)
 
 -- Common Typeclasses
 
@@ -58,8 +58,8 @@ foreign import data CellLoop :: Type -> Type
 newStream :: forall a. Stream a
 newStream = runFn0 newStreamImpl
 
-newCell :: forall a. a -> Maybe (Stream a) -> Cell a
-newCell a s = runFn2 newCellImpl a (toNullable s)
+newCell :: forall a. a -> Cell a
+newCell a = runFn1 newCellImpl a 
 
 -- | Create a new StreamSink
 -- StreamSinks can be used to send events
@@ -82,7 +82,7 @@ newCellLoop :: forall a. Effect (CellLoop a)
 newCellLoop = newCellLoopImpl
 
 foreign import newStreamImpl :: forall a. Fn0 (Stream a)
-foreign import newCellImpl :: forall a. Fn2 a (Nullable (Stream a)) (Cell a)
+foreign import newCellImpl :: forall a. Fn1 a (Cell a)
 
 foreign import newStreamSinkImpl :: forall a. EffectFn1 (Nullable (Fn2 a a a)) (StreamSink a)
 foreign import newCellSinkImpl :: forall a. EffectFn2 a (Nullable (Fn2 a a a)) (CellSink a)

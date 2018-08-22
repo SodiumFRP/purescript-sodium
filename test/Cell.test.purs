@@ -37,7 +37,7 @@ testCell :: Effect Unit
 testCell = runTest do
     suite "[cell] basic tests" do
         test "constant" do
-            let a = newCell 2 Nothing
+            let a = newCell 2
             result <- makeAff (\cb -> do
                 unlisten <- listen a \value ->
                     cb $ Right value 
@@ -46,7 +46,7 @@ testCell = runTest do
             )
             Assert.equal result 2
         test "map" do
-            let a = newCell 2 Nothing
+            let a = newCell 2
             let b = (\x -> x + x) <$> a
             result <- makeAff (\cb -> do
                 unlisten <- listen b \value ->
@@ -71,14 +71,14 @@ testCell = runTest do
             Assert.equal (fromFoldable [2, 4]) results
 
         test "sample" do
-            let a = newCell 2 Nothing
+            let a = newCell 2
             Assert.equal (sample a) 2
     suite "[cell] lift" do
         test "lift" do
             let c = lift
                     (\x1 -> \x2 -> x1 + x2)
-                    (newCell 2 Nothing)
-                    (newCell 1 Nothing)
+                    (newCell 2)
+                    (newCell 1)
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
                     cb $ Right value 
@@ -88,9 +88,9 @@ testCell = runTest do
         test "lift3" do
             let c = lift3
                     (\x1 x2 x3 -> x1 + x2 + x3)
-                    (newCell 3 Nothing)
-                    (newCell 2 Nothing)
-                    (newCell 1 Nothing)
+                    (newCell 3)
+                    (newCell 2)
+                    (newCell 1)
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
                     cb $ Right value 
@@ -100,10 +100,10 @@ testCell = runTest do
         test "lift4" do
             let c = lift4
                     (\x1 x2 x3 x4 -> x1 + x2 + x3 + x4)
-                    (newCell 4 Nothing)
-                    (newCell 3 Nothing)
-                    (newCell 2 Nothing)
-                    (newCell 1 Nothing)
+                    (newCell 4)
+                    (newCell 3)
+                    (newCell 2)
+                    (newCell 1)
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
                     cb $ Right value 
@@ -113,11 +113,11 @@ testCell = runTest do
         test "lift5" do
             let c = lift5
                     (\x1 x2 x3 x4 x5 -> x1 + x2 + x3 + x4 + x5)
-                    (newCell 5 Nothing)
-                    (newCell 4 Nothing)
-                    (newCell 3 Nothing)
-                    (newCell 2 Nothing)
-                    (newCell 1 Nothing)
+                    (newCell 5)
+                    (newCell 4)
+                    (newCell 3)
+                    (newCell 2)
+                    (newCell 1)
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
                     cb $ Right value 
@@ -127,12 +127,12 @@ testCell = runTest do
         test "lift6" do
             let c = lift6
                     (\x1 x2 x3 x4 x5 x6 -> x1 + x2 + x3 + x4 + x5 + x6)
-                    (newCell 6 Nothing)
-                    (newCell 5 Nothing)
-                    (newCell 4 Nothing)
-                    (newCell 3 Nothing)
-                    (newCell 2 Nothing)
-                    (newCell 1 Nothing)
+                    (newCell 6)
+                    (newCell 5)
+                    (newCell 4)
+                    (newCell 3)
+                    (newCell 2)
+                    (newCell 1)
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
                     cb $ Right value 
@@ -141,7 +141,7 @@ testCell = runTest do
             Assert.equal result 21 
     suite "[cell] switch" do
         test "switchC" do
-            let c = switchC $ newCell (newCell 2 Nothing) Nothing
+            let c = switchC $ newCell (newCell 2)
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
                     cb $ Right value 
@@ -150,7 +150,7 @@ testCell = runTest do
             Assert.equal result 2
         test "switchS" do
             s1 <- liftEffect $ newStreamSink Nothing
-            let s2 = switchS $ newCell (toStream s1) Nothing
+            let s2 = switchS $ newCell (toStream s1)
             result <- makeAff \cb -> do
                 unlisten <- listen s2 \value ->
                     cb $ Right value 
