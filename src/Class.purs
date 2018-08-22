@@ -154,13 +154,12 @@ instance semigroupStream :: Semigroup (Stream a) where
     append = runFn2 concatStreamImpl
 
 instance monoidStream :: Monoid (Stream a) where
-    mempty = emptyImpl 
+    mempty = newStream 
 
 foreign import mapStreamImpl :: forall a b. Fn2 (a -> b) (Stream a) (Stream b)
 
 foreign import concatStreamImpl :: forall a. Fn2 (Stream a) (Stream a) (Stream a)
 
-foreign import emptyImpl :: forall a. Stream a 
 
 -- | Categories (Cell)
 

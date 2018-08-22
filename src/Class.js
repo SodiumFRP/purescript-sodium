@@ -79,9 +79,6 @@ exports.concatStreamImpl = function(other, s) {
     return s['fantasy-land/concat'] (other);
 }
 
-exports.emptyImpl = function() {
-    return s['fantasy-land/empty'] ();
-}
 
 //Cell
 exports.mapCellImpl = function (f, c) {
