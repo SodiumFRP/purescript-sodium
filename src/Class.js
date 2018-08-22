@@ -92,3 +92,12 @@ exports.applyImpl = function(cf, c) {
 exports.bindImpl = function(c, f) {
     return c['fantasy-land/chain'](f);
 }
+
+exports.extendImpl = function(f, c) {
+    return c['fantasy-land/extend'](f);
+}
+
+
+exports.extractImpl = function(c) {
+    return c['fantasy-land/extract']();
+}
