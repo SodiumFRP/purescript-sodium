@@ -59,7 +59,7 @@ newStream :: forall a. Stream a
 newStream = runFn0 newStreamImpl
 
 newCell :: forall a. a -> Cell a
-newCell a = runFn1 newCellImpl a 
+newCell = runFn1 newCellImpl
 
 -- | Create a new StreamSink
 -- StreamSinks can be used to send events
@@ -166,14 +166,14 @@ foreign import concatStreamImpl :: forall a. Fn2 (Stream a) (Stream a) (Stream a
 instance functorCell :: Functor Cell where
     map = runFn2 mapCellImpl
 
-foreign import mapCellImpl :: forall a b. Fn2 (a -> b) (Cell a) (Cell b)
-
-
-{-
-    Apply
--}
-
 instance applyCell :: Apply Cell where
     apply = runFn2 applyImpl
 
+instance applicativeCell :: Applicative Cell where
+    pure = runFn1 newCellImpl
+
+foreign import mapCellImpl :: forall a b. Fn2 (a -> b) (Cell a) (Cell b)
+
 foreign import applyImpl :: forall a b. Fn2 (Cell (a -> b)) (Cell a) (Cell b)
+
+
