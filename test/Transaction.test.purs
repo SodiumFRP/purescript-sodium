@@ -4,8 +4,8 @@ import Prelude
 
 import SodiumFRP.Transaction (runTransaction)
 import SodiumFRP.Class (newCellLoop, newCell, newStream, newStreamLoop)
-import SodiumFRP.Cell (loop, sample)
-import SodiumFRP.Stream as StreamFn
+import SodiumFRP.Cell (loopCell, sample)
+import SodiumFRP.Stream (loopStream) 
 import Data.Maybe (Maybe(Nothing))
 import Effect (Effect)
 import Effect.Class (liftEffect)
@@ -26,7 +26,7 @@ testTransaction = runTest do
             result <- liftEffect $ runTransaction (do
                 l <- newCellLoop
                 let c = newCell 2 Nothing
-                loop c l
+                loopCell c l
                 pure $ sample l 
             )
             Assert.equal result 2
@@ -35,7 +35,7 @@ testTransaction = runTest do
             result <- liftEffect $ runTransaction (do
                 l <- newStreamLoop
                 let s = newStream 
-                StreamFn.loop s l
+                loopStream s l
                 pure unit 
             )
             pure unit

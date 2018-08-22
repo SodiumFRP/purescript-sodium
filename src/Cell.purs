@@ -1,6 +1,6 @@
 module SodiumFRP.Cell (
     sample,
-    loop,
+    loopCell,
     lift,
     lift3,
     lift4,
@@ -40,8 +40,8 @@ foreign import sampleImpl :: forall a. Cell a -> a
     It must be invoked inside the same transaction as the place where the CellLoop is used.
     This requires you to create an explicit transaction 
 -}
-loop :: forall a c. (SodiumCell c) => c a -> CellLoop a -> Effect Unit
-loop c = runEffectFn2 loopCellImpl (toCell c)
+loopCell :: forall a c. (SodiumCell c) => c a -> CellLoop a -> Effect Unit
+loopCell c = runEffectFn2 loopCellImpl (toCell c)
 
 foreign import loopCellImpl :: forall a. EffectFn2 (Cell a) (CellLoop a) Unit
 

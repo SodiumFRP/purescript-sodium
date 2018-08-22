@@ -14,7 +14,7 @@ module SodiumFRP.Stream (
     collect,
     accum,
     once,
-    loop
+    loopStream
 ) where
 
 import SodiumFRP.Class (
@@ -165,8 +165,8 @@ once s = onceImpl (toStream s)
     It must be invoked inside the same transaction as the place where the StreamLoop is used.
     This requires you to create an explicit transaction 
 -}
-loop :: forall a s. (SodiumStream s) => s a -> StreamLoop a -> Effect Unit
-loop s = runEffectFn2 loopStreamImpl (toStream s)
+loopStream :: forall a s. (SodiumStream s) => s a -> StreamLoop a -> Effect Unit
+loopStream s = runEffectFn2 loopStreamImpl (toStream s)
 
 -- Foreign imports
 
