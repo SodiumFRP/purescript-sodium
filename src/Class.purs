@@ -30,8 +30,6 @@ import Unsafe.Coerce (unsafeCoerce)
 import Data.Nullable (Nullable, toNullable)
 import Data.Maybe (Maybe)
 import Data.Function.Uncurried ( Fn0, runFn0, Fn1, runFn1, Fn2, runFn2, mkFn2)
-import Control.Extend (class Extend)
-import Control.Comonad (class Comonad)
 
 -- Common Typeclasses
 
@@ -177,18 +175,8 @@ instance applicativeCell :: Applicative Cell where
 instance bindCell :: Bind Cell where
     bind = runFn2 bindImpl
 
-instance extendCell :: Extend Cell where
-    extend = runFn2 extendImpl
-
-instance comonadCell :: Comonad Cell where
-    extract = runFn1 extractImpl 
-
 foreign import mapCellImpl :: forall a b. Fn2 (a -> b) (Cell a) (Cell b)
 
 foreign import applyImpl :: forall a b. Fn2 (Cell (a -> b)) (Cell a) (Cell b)
 
 foreign import bindImpl :: forall a b. Fn2 (Cell a) (a -> Cell b) (Cell b)
-
-foreign import extendImpl :: forall a b. Fn2 (Cell a -> b) (Cell a) (Cell b)
-
-foreign import extractImpl :: forall a. Fn1 (Cell a) (a)
