@@ -39,7 +39,7 @@ import Data.Function.Uncurried (
     Fn6, runFn6, mkFn6,
     Fn7, runFn7
 )
-
+import Effect.Unsafe (unsafePerformEffect)
 
 
 -- | Transform the stream's event values into the specified constant value.
@@ -168,6 +168,13 @@ once s = runFn1 onceImpl (toStream s)
 -}
 loopStream :: forall a s. (SodiumStream s) => s a -> StreamLoop a -> Effect Unit
 loopStream s = runEffectFn2 loopStreamImpl (toStream s)
+
+{-|
+    Runs the side effects as a map over stream events
+    This is a safe thing to do in Sodium
+-}
+execute :: forall a. Stream (Effect a) -> Stream a
+execute = map unsafePerformEffect 
 
 -- Foreign imports
 
