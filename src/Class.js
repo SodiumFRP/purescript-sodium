@@ -8,25 +8,33 @@ const Stream = Sodium.Stream;
 const StreamSink = Sodium.StreamSink;
 const StreamLoop = Sodium.StreamLoop;
 
-//Stream
+// Constructors
 
 exports.newStreamImpl = function() {
     return new StreamSink();
+}
+
+exports.newCellImpl = function(x, s) {
+    return new Cell(x, s);
+}
+
+exports.newStreamLoopImpl = function() {
+    return new StreamLoop();
+}
+
+exports.newCellLoopImpl = function() {
+    return new CellLoop();
 }
 
 exports.newStreamSinkImpl = function(mergeFn) {
     return new StreamSink(mergeFn);
 }
 
-exports.toStreamImpl = function(streamSink) {
-    return streamSink;
+exports.newCellSinkImpl = function(x, mergeFn) {
+    return new CellSink(x, mergeFn);
 }
 
-exports.mapStreamImpl = function (f, s) {
-    return s.map(f);
-}
-
-
+// Listen
 exports.listenStreamImpl = function(stream, listener) {
     //stream.listen(function(value) { console.log("GOT [" + value + "]")});
     var unlistener = stream.listen(listener);
@@ -35,30 +43,6 @@ exports.listenStreamImpl = function(stream, listener) {
         //console.log("UNLISTENING");
         unlistener();
     }
-}
-
-
-exports.sendStreamImpl = function(a, streamSink) {
-    //console.log("SENDING [" + a + "]");
-    streamSink.send(a);
-}
-//Cell
-
-exports.newCellImpl = function(x, s) {
-    return new Cell(x, s);
-}
-
-
-exports.newCellSinkImpl = function(x, mergeFn) {
-    return new CellSink(x, mergeFn);
-}
-
-exports.toCellImpl = function(cellSink) {
-    return cellSink;
-}
-
-exports.mapCellImpl = function (f, c) {
-    return c.map(f);
 }
 
 exports.listenCellImpl = function(c, listener) {
@@ -71,8 +55,40 @@ exports.listenCellImpl = function(c, listener) {
     }
 }
 
+// Send
+exports.sendStreamImpl = function(a, streamSink) {
+    //console.log("SENDING [" + a + "]");
+    streamSink.send(a);
+}
 
 exports.sendCellImpl = function(a, cellSink) {
     //console.log("SENDING [" + a + "]");
     cellSink.send(a);
+}
+
+//Categories
+//To satisfy category laws, re-use fantasy-land implementations
+//Additional benefit is potential for runtime checking via Z
+
+//Stream
+exports.mapStreamImpl = function (f, s) {
+    return s['fantasy-land/map'](f);
+}
+
+exports.concatStreamImpl = function(other, s) {
+    return s['fantasy-land/concat'] (other);
+}
+
+
+//Cell
+exports.mapCellImpl = function (f, c) {
+    return c['fantasy-land/map'](f);
+}
+
+exports.applyImpl = function(cf, c) {
+    return c['fantasy-land/ap'](cf);
+}
+
+exports.bindImpl = function(c, f) {
+    return c['fantasy-land/chain'](f);
 }
