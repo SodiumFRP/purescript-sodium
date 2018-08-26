@@ -22,6 +22,6 @@
   "homepage": "https://github.com/SodiumFRP/purescript-sodium",
   "devDependencies": {
     "rimraf": "2.6.2",
-    "sodiumjs": "2.0.1"
+    "sodiumjs": "2.0.2"
   }
 }
