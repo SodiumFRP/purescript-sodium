@@ -10,6 +10,7 @@ import Test.Unit (suite, test)
 import Test.Unit.Main (runTest)
 import Test.QuickCheck.Laws.Data.Functor (checkFunctor)
 import Test.QuickCheck.Laws.Control.Apply (checkApply)
+import Test.QuickCheck.Laws.Control.Applicative (checkApplicative)
 import Type.Proxy (Proxy2 (..))
 import Test.QuickCheck.Arbitrary(class Arbitrary, arbitrary)
 
@@ -22,6 +23,8 @@ testCategories = runTest do
            liftEffect $ checkFunctor prxCell
         test "[cell] apply" do
            liftEffect $ checkApply prxCell
+        test "[cell] applicative" do
+           liftEffect $ checkApplicative prxCell
 
 prxCell :: Proxy2 ArbitraryCell
 prxCell = Proxy2
@@ -44,3 +47,6 @@ instance functorArbitraryCell :: Functor ArbitraryCell where
 
 instance applyArbitraryCell :: Apply ArbitraryCell where
     apply (ArbitraryCell a) (ArbitraryCell b) = ArbitraryCell $ apply a b 
+
+instance applicativeArbitraryCell :: Applicative ArbitraryCell where
+    pure a = ArbitraryCell $ pure a 
