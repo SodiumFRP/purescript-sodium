@@ -14,7 +14,8 @@ module SodiumFRP.Stream (
     collect,
     accum,
     once,
-    loopStream
+    loopStream,
+    execute
 ) where
 
 import SodiumFRP.Class (
@@ -173,8 +174,8 @@ loopStream s = runEffectFn2 loopStreamImpl (toStream s)
     Runs the side effects as a map over stream events
     This is a safe thing to do in Sodium
 -}
-execute :: forall a. Stream (Effect a) -> Stream a
-execute = map unsafePerformEffect 
+execute :: forall a s. (SodiumStream s) => s (Effect a) -> Stream a
+execute s = map unsafePerformEffect (toStream s)
 
 -- Foreign imports
 

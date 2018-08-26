@@ -22,8 +22,10 @@ import SodiumFRP.Stream (
     hold,
     collect,
     accum,
-    once
+    once,
+    execute
 )
+
 import SodiumFRP.Class (
     send, 
     listen, 
@@ -367,3 +369,16 @@ testStream = runTest do
                 unlisten
                 pure nonCanceler 
             Assert.equal result 2
+    suite "[stream] execute" do
+        test "execute" do
+            a <- liftEffect $ ((newStreamSink Nothing) :: Effect (StreamSink (Effect String)))
+            let b = execute a
+            result <- makeAff \cb -> do
+                unlisten <- listen b \value ->
+                    cb $ Right value 
+                send (mockDbGet) a
+                unlisten
+                pure nonCanceler 
+            Assert.equal result "DB RESULT" 
+
+foreign import mockDbGet :: Effect String
