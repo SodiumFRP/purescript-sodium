@@ -11,6 +11,7 @@ import Test.Unit.Main (runTest)
 import Test.QuickCheck.Laws.Data.Functor (checkFunctor)
 import Test.QuickCheck.Laws.Control.Apply (checkApply)
 import Test.QuickCheck.Laws.Control.Applicative (checkApplicative)
+import Test.QuickCheck.Laws.Control.Bind (checkBind)
 import Type.Proxy (Proxy2 (..))
 import Test.QuickCheck.Arbitrary(class Arbitrary, arbitrary)
 
@@ -25,6 +26,8 @@ testCategories = runTest do
            liftEffect $ checkApply prxCell
         test "[cell] applicative" do
            liftEffect $ checkApplicative prxCell
+        test "[cell] bind" do
+           liftEffect $ checkBind prxCell
 
 prxCell :: Proxy2 ArbitraryCell
 prxCell = Proxy2
@@ -33,6 +36,8 @@ prxCell = Proxy2
 --so we need to make a newtype and re-define instances for it
 newtype ArbitraryCell a = ArbitraryCell (Cell a)
 
+getCellFromArbitrary :: forall a. ArbitraryCell a -> Cell a
+getCellFromArbitrary (ArbitraryCell c) = c
 
 instance arbCell :: (Arbitrary a) => Arbitrary (ArbitraryCell a) where
   arbitrary = do
@@ -50,3 +55,7 @@ instance applyArbitraryCell :: Apply ArbitraryCell where
 
 instance applicativeArbitraryCell :: Applicative ArbitraryCell where
     pure a = ArbitraryCell $ pure a 
+
+
+instance bindArbitraryCell :: Bind ArbitraryCell where
+    bind (ArbitraryCell a) f = ArbitraryCell $ bind a (\x -> getCellFromArbitrary(f x))
