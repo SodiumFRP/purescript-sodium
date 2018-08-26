@@ -175,6 +175,8 @@ instance applicativeCell :: Applicative Cell where
 instance bindCell :: Bind Cell where
     bind = runFn2 bindImpl
 
+instance monadCell :: Monad Cell
+
 foreign import mapCellImpl :: forall a b. Fn2 (a -> b) (Cell a) (Cell b)
 
 foreign import applyImpl :: forall a b. Fn2 (Cell (a -> b)) (Cell a) (Cell b)

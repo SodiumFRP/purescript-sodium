@@ -12,6 +12,7 @@ import Test.QuickCheck.Laws.Data.Functor (checkFunctor)
 import Test.QuickCheck.Laws.Control.Apply (checkApply)
 import Test.QuickCheck.Laws.Control.Applicative (checkApplicative)
 import Test.QuickCheck.Laws.Control.Bind (checkBind)
+import Test.QuickCheck.Laws.Control.Monad (checkMonad)
 import Type.Proxy (Proxy2 (..))
 import Test.QuickCheck.Arbitrary(class Arbitrary, arbitrary)
 
@@ -19,7 +20,7 @@ import Test.QuickCheck.Arbitrary(class Arbitrary, arbitrary)
 
 testCategories :: Effect Unit
 testCategories = runTest do
-    suite "[categories]" do
+    suite "[cell categories]" do
         test "[cell] functor" do
            liftEffect $ checkFunctor prxCell
         test "[cell] apply" do
@@ -28,6 +29,8 @@ testCategories = runTest do
            liftEffect $ checkApplicative prxCell
         test "[cell] bind" do
            liftEffect $ checkBind prxCell
+        test "[cell] monad" do
+           liftEffect $ checkMonad prxCell
 
 prxCell :: Proxy2 ArbitraryCell
 prxCell = Proxy2
@@ -56,6 +59,7 @@ instance applyArbitraryCell :: Apply ArbitraryCell where
 instance applicativeArbitraryCell :: Applicative ArbitraryCell where
     pure a = ArbitraryCell $ pure a 
 
-
 instance bindArbitraryCell :: Bind ArbitraryCell where
     bind (ArbitraryCell a) f = ArbitraryCell $ bind a (\x -> getCellFromArbitrary(f x))
+
+instance monadArbitraryCell :: Monad ArbitraryCell
