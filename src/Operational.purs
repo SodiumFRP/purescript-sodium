@@ -1,5 +1,8 @@
 module SodiumFRP.Operational (
-    updates
+    updates,
+    value,
+    defer,
+    split
 ) where 
 
 import SodiumFRP.Class (
