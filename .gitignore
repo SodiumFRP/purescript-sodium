@@ -8,7 +8,7 @@ output/
 .psc-package/
 .psc-ide-port
 
-# node
+# node and bower
 npm-debug.log
 dist
 node_modules

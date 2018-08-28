@@ -1,0 +1,32 @@
+{
+  "name": "purescript-sodium",
+  "homepage": "https://github.com/SodiumFRP/purescript-sodium",
+  "description": "Wrapper for Sodium",
+  "keywords": [
+    "Purescript",
+    "SodiumFRP",
+    "FRP"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/SodiumFRP/purescript-sodium.git"
+  },
+  "license": "BSD-3-Clause",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "output",
+    "bower.json",
+    "package.json",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "purescript-aff": "^5.0.2",
+    "purescript-nullable": "^4.0.0",
+    "purescript-test-unit": "^14.0.0",
+    "purescript-quickcheck-laws": "^4.0.0",
+    "purescript-numbers": "^6.0.0"
+  }
+}
