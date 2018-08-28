@@ -42,11 +42,11 @@ instance isDepStreamSink :: IsDep StreamSink where
 instance isDepCellSink :: IsDep CellSink where
     mkDep = unsafeCoerce
 
--- | Lambda1
+-- Lambda1
 class Lambda1 target where
     mapLambda1 :: forall a b. (a -> b) -> Array Dep -> target a -> target b
 
--- | Stream
+-- Stream
 instance lambda1Stream :: Lambda1 Stream where
     mapLambda1 = runFn3 mapLambda1StreamImpl
 
@@ -76,7 +76,7 @@ foreign import snapshot4LambdaImpl :: forall a b c d e. Fn6 (Fn4 a b c d e) (Arr
 foreign import snapshot5LambdaImpl :: forall a b c d e f. Fn7 (Fn5 a b c d e f) (Array Dep) (Cell b) (Cell c) (Cell d) (Cell e) (Stream a) (Stream f)
 foreign import snapshot6LambdaImpl :: forall a b c d e f g. Fn8 (Fn6 a b c d e f g) (Array Dep) (Cell b) (Cell c) (Cell d) (Cell e) (Cell f) (Stream a) (Stream g)
 
--- | Cell 
+-- Cell 
 instance lambda1Cell :: Lambda1 Cell where
     mapLambda1 = runFn3 mapLambda1CellImpl
 

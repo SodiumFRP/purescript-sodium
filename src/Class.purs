@@ -33,16 +33,16 @@ import Data.Function.Uncurried ( Fn0, runFn0, Fn1, runFn1, Fn2, runFn2, mkFn2)
 
 -- Common Typeclasses
 
--- | Listenable
--- Listen for firings of this cell or event.
--- The returned Effect is a function that unregisteres the listener
--- This is the observer pattern.
+-- Listenable
+-- | Listen for firings of this cell or event.
+-- | The returned Effect is a function that unregisteres the listener
+-- | This is the observer pattern.
 
 class Listenable l where
     listen :: forall a. l a -> (a -> Effect Unit) -> Effect (Effect Unit)
 
--- | Sendable
--- Send events or change of behavior
+-- Sendable
+-- | Send events or change of behavior
 class Sendable s where
     send :: forall a. a -> s a -> Effect Unit
 
@@ -61,9 +61,9 @@ newStream = runFn0 newStreamImpl
 newCell :: forall a. a -> Cell a
 newCell = runFn1 newCellImpl
 
--- | Create a new StreamSink
--- StreamSinks can be used to send events
--- The optional value is merging function
+-- Create a new StreamSink
+-- | StreamSinks can be used to send events
+-- | The optional value is merging function
 newStreamSink :: forall a. Maybe (a -> a -> a) -> Effect (StreamSink a)
 newStreamSink m = 
     runEffectFn1 newStreamSinkImpl (toNullable (mkFn2 <$> m))
@@ -72,12 +72,12 @@ newCellSink :: forall a. a -> Maybe (a -> a -> a) -> Effect (CellSink a)
 newCellSink a m = runEffectFn2 newCellSinkImpl a (toNullable (mkFn2 <$> m))
 
 -- | A forward reference for a 'Stream' equivalent to the Stream that is referenced.
--- Must be run in an explicit Transaction
+-- | Must be run in an explicit Transaction
 newStreamLoop :: forall a. Effect (StreamLoop a)
 newStreamLoop = newStreamLoopImpl
 
 -- | A forward reference for a 'Cell' equivalent to the Cell that is referenced.
--- Must be run in an explicit Transaction
+-- | Must be run in an explicit Transaction
 newCellLoop :: forall a. Effect (CellLoop a)
 newCellLoop = newCellLoopImpl
 
@@ -90,7 +90,7 @@ foreign import newCellSinkImpl :: forall a. EffectFn2 a (Nullable (Fn2 a a a)) (
 foreign import newStreamLoopImpl :: forall a. Effect (StreamLoop a)
 foreign import newCellLoopImpl :: forall a. Effect (CellLoop a)
 
--- | Convertors
+-- Convertors
 
 class SodiumStream s where
     toStream :: forall a. s a -> Stream a
@@ -114,7 +114,7 @@ instance streamLoopToStream :: SodiumStream StreamLoop where
 instance cellLoopToCell :: SodiumCell CellLoop where
     toCell = unsafeCoerce 
 
--- | Listen
+-- Listen
 
 instance listenStream :: Listenable Stream where
     listen s cb = runEffectFn2 listenStreamImpl s (mkEffectFn1 cb)
@@ -135,7 +135,7 @@ instance listenCellLoop :: Listenable CellLoop where
 foreign import listenStreamImpl :: forall a. EffectFn2 (Stream a) (EffectFn1 a Unit) (Effect Unit)
 foreign import listenCellImpl :: forall a. EffectFn2 (Cell a) (EffectFn1 a Unit) (Effect Unit)
 
--- | Send
+-- Send
 
 instance sendStream :: Sendable StreamSink where
     send = runEffectFn2 sendStreamImpl
@@ -145,7 +145,7 @@ instance sendCell :: Sendable CellSink where
 foreign import sendStreamImpl :: forall a. EffectFn2 a (StreamSink a) Unit
 foreign import sendCellImpl :: forall a. EffectFn2 a (CellSink a) Unit
 
--- | Categories (Stream)
+-- Categories (Stream)
 
 instance functorStream :: Functor Stream where
     map = runFn2 mapStreamImpl
@@ -161,7 +161,7 @@ foreign import mapStreamImpl :: forall a b. Fn2 (a -> b) (Stream a) (Stream b)
 foreign import concatStreamImpl :: forall a. Fn2 (Stream a) (Stream a) (Stream a)
 
 
--- | Categories (Cell)
+-- Categories (Cell)
 
 instance functorCell :: Functor Cell where
     map = runFn2 mapCellImpl
