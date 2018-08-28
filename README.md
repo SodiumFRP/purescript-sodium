@@ -5,6 +5,13 @@ Purescript wrapper for SodiumFRP
 
 ## Installation
 
+1. Javascript dependencies:
+
+```
+npm install sodiumjs
+```
+
+2. Purescript
 ```
 bower install purescript-sodium
 # or (soon)
