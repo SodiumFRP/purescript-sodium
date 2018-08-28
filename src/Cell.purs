@@ -15,7 +15,9 @@ import SodiumFRP.Class(
     CellLoop,
     toCell,
     class SodiumCell,
-    Stream
+    Stream,
+    class Loop,
+    newCellLoop
 )
 
 import Prelude
@@ -23,15 +25,16 @@ import Effect (Effect)
 import Effect.Uncurried (EffectFn2, runEffectFn2)
 import Data.Function.Uncurried (
     Fn1, runFn1,
-    Fn2, mkFn2, 
-    Fn3, runFn3, mkFn3, 
-    Fn4, runFn4, mkFn4, 
+    Fn2, mkFn2,
+    Fn3, runFn3, mkFn3,
+    Fn4, runFn4, mkFn4,
     Fn5, runFn5, mkFn5,
     Fn6, runFn6, mkFn6,
     Fn7, runFn7
 )
+import Data.Tuple
 
--- | Sample 
+-- | Sample
 
 sample :: forall a c. (SodiumCell c) => c a -> a
 sample c = runFn1 sampleImpl (toCell c)
@@ -40,9 +43,9 @@ foreign import sampleImpl :: forall a. Fn1 (Cell a) (a)
 
 {-| Loop
 
-    Resolve the loop to specify what the CellLoop was a forward reference to. 
+    Resolve the loop to specify what the CellLoop was a forward reference to.
     It must be invoked inside the same transaction as the place where the CellLoop is used.
-    This requires you to create an explicit transaction 
+    This requires you to create an explicit transaction
 -}
 loopCell :: forall a c. (SodiumCell c) => c a -> CellLoop a -> Effect Unit
 loopCell c = runEffectFn2 loopCellImpl (toCell c)
@@ -55,7 +58,7 @@ foreign import loopCellImpl :: forall a. EffectFn2 (Cell a) (CellLoop a) Unit
 
 lift :: forall a b c cel. (SodiumCell cel) => (a -> b -> c) -> cel b -> cel a -> Cell c
 lift f c1 c2 = runFn3 liftImpl (mkFn2 f) (toCell c1) (toCell c2)
-         
+
 lift3 :: forall a b c d cel. (SodiumCell cel) => (a -> b -> c -> d) -> cel b -> cel c -> cel a -> Cell d
 lift3 f c1 c2 c3 = runFn4 lift3Impl (mkFn3 f) (toCell c1) (toCell c2) (toCell c3)
 
@@ -79,11 +82,10 @@ foreign import lift6Impl :: forall a b c d e f g. Fn7 (Fn6 a b c d e f g) (Cell 
 -}
 
 switchC :: forall a c. (SodiumCell c) => c (Cell a) -> Cell a
-switchC c = runFn1 switchCImpl (toCell c) 
+switchC c = runFn1 switchCImpl (toCell c)
 
 switchS :: forall a c. (SodiumCell c) => c (Stream a) -> Stream a
-switchS c = runFn1 switchSImpl (toCell c) 
+switchS c = runFn1 switchSImpl (toCell c)
 
 foreign import switchCImpl :: forall a. Fn1 (Cell (Cell a)) (Cell a)
 foreign import switchSImpl :: forall a. Fn1 (Cell (Stream a)) (Stream a)
-

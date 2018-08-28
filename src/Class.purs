@@ -18,17 +18,23 @@ module SodiumFRP.Class (
     class Listenable,
     listen,
     class Sendable,
-    send
+    send,
+    class Loop,
+    loop,
+    loop1,
+    loop2,
+    loop3
 )
 where
 
 import Effect (Effect)
 
-import Prelude 
+import Prelude
 import Effect.Uncurried (runEffectFn1, mkEffectFn1, EffectFn1, EffectFn2, runEffectFn2)
 import Unsafe.Coerce (unsafeCoerce)
 import Data.Nullable (Nullable, toNullable)
-import Data.Maybe (Maybe)
+import Data.Maybe (Maybe(..))
+import Data.Tuple (Tuple(..))
 import Data.Function.Uncurried ( Fn0, runFn0, Fn1, runFn1, Fn2, runFn2, mkFn2)
 
 -- Common Typeclasses
@@ -46,12 +52,77 @@ class Listenable l where
 class Sendable s where
     send :: forall a. a -> s a -> Effect Unit
 
+-- | Loop
+class Loop target where
+    loop :: forall a b. (target a -> Effect (Tuple (target a) b)) -> Effect (Tuple (target a) b)
+
+loopCell_ :: forall a c. (SodiumCell c) => c a -> CellLoop a -> Effect Unit
+loopCell_ c = runEffectFn2 loopCellImpl_ (toCell c)
+
+loopStream_ :: forall a s. (SodiumStream s) => s a -> StreamLoop a -> Effect Unit
+loopStream_ s = runEffectFn2 loopStreamImpl_ (toStream s)
+
+foreign import loopCellImpl_ :: forall a. EffectFn2 (Cell a) (CellLoop a) Unit
+foreign import loopStreamImpl_ :: forall a. EffectFn2 (Stream a) (StreamLoop a) Unit
+
+instance loopCell :: Loop Cell where
+    loop f = runTransaction_ $ do
+        cla <- newCellLoop
+        r <- f $ toCell cla
+        let (Tuple ca b) = r
+        loopCell_ ca cla
+        pure $ r
+
+instance loopStream :: Loop Stream where
+    loop f = runTransaction_ $ do
+        sla <- newStreamLoop
+        r <- f $ toStream sla
+        let (Tuple sa b) = r
+        loopStream_ sa sla
+        pure $ r
+
+runTransaction_ :: forall a. Effect a -> Effect a
+runTransaction_ = runEffectFn1 runTransactionImpl_
+
+foreign import runTransactionImpl_ :: forall a. EffectFn1 (Effect a) (a)
+
+loop1 :: forall target a b. Loop target => (forall r. (target a -> b -> r) -> target a -> Effect r) -> Effect b
+loop1 f = (\(Tuple _ b) -> b) <$> loop (\ta -> f Tuple ta)
+
+loop2 :: forall a b c target1 target2. Loop target1 => Loop target2 => (forall r. (target1 a -> target2 b -> c -> r) -> target1 a -> target2 b -> Effect r) -> Effect c
+loop2 f =
+    let f2 = f (\ta tb c -> Tuple ta (Tuple tb c))
+    in
+    loop1 (\ret1 ta' -> do
+        r <- loop1 (\ret2 tb' -> do
+            r <- f2 ta' tb'
+            let Tuple ta (Tuple tb c) = r
+            pure $ ret2 tb (Tuple ta c)
+        )
+        let Tuple ta c = r
+        pure $ ret1 ta c
+    )
+
+loop3 :: forall a b c d target1 target2 target3. Loop target1 => Loop target2 => Loop target3 => (forall r. (target1 a -> target2 b -> target3 c -> d -> r) -> target1 a -> target2 b -> target3 c -> Effect r) -> Effect d
+loop3 f =
+    let f2 = f (\ta tb tc d -> Tuple ta (Tuple tb (Tuple tc d)))
+    in
+    loop2 (\ret1 ta' tb' -> do
+        r <- loop1 (\ret2 tc' -> do
+            r <- f2 ta' tb' tc'
+            let Tuple ta (Tuple tb (Tuple tc d)) = r
+            pure $ ret2 tc' (Tuple ta (Tuple tb d))
+        )
+        let Tuple ta (Tuple tb d) = r
+        pure $ ret1 ta tb d
+    )
+
 -- | Constructors
 
-foreign import data Stream :: Type -> Type 
-foreign import data Cell :: Type -> Type 
-foreign import data StreamSink :: Type -> Type 
-foreign import data CellSink :: Type -> Type 
+foreign import data Stream :: Type -> Type
+foreign import data Cell :: Type -> Type
+foreign import data StreamSink :: Type -> Type
+foreign import data CellSink :: Type -> Type
 foreign import data StreamLoop :: Type -> Type
 foreign import data CellLoop :: Type -> Type
 
@@ -65,7 +136,7 @@ newCell = runFn1 newCellImpl
 -- StreamSinks can be used to send events
 -- The optional value is merging function
 newStreamSink :: forall a. Maybe (a -> a -> a) -> Effect (StreamSink a)
-newStreamSink m = 
+newStreamSink m =
     runEffectFn1 newStreamSinkImpl (toNullable (mkFn2 <$> m))
 
 newCellSink :: forall a. a -> Maybe (a -> a -> a) -> Effect (CellSink a)
@@ -100,19 +171,19 @@ class SodiumCell c where
 
 
 instance streamToStream :: SodiumStream Stream where
-    toStream = unsafeCoerce 
+    toStream = unsafeCoerce
 instance cellToCell :: SodiumCell Cell where
-    toCell = unsafeCoerce 
+    toCell = unsafeCoerce
 
 instance streamSinkToStream :: SodiumStream StreamSink where
-    toStream = unsafeCoerce 
+    toStream = unsafeCoerce
 instance cellSinkToCell :: SodiumCell CellSink where
-    toCell = unsafeCoerce 
+    toCell = unsafeCoerce
 
 instance streamLoopToStream :: SodiumStream StreamLoop where
-    toStream = unsafeCoerce 
+    toStream = unsafeCoerce
 instance cellLoopToCell :: SodiumCell CellLoop where
-    toCell = unsafeCoerce 
+    toCell = unsafeCoerce
 
 -- | Listen
 
@@ -154,7 +225,7 @@ instance semigroupStream :: Semigroup (Stream a) where
     append = runFn2 concatStreamImpl
 
 instance monoidStream :: Monoid (Stream a) where
-    mempty = newStream 
+    mempty = newStream
 
 foreign import mapStreamImpl :: forall a b. Fn2 (a -> b) (Stream a) (Stream b)
 

@@ -8,6 +8,18 @@ const Stream = Sodium.Stream;
 const StreamSink = Sodium.StreamSink;
 const StreamLoop = Sodium.StreamLoop;
 
+exports.loopCellImpl_ = function(c, cLoop) {
+    cLoop.loop(c);
+}
+
+exports.loopStreamImpl_ = function(s, sLoop) {
+    sLoop.loop(s);
+}
+
+exports.runTransactionImpl_ = function(fn) {
+    return Sodium.Transaction.run(fn);
+}
+
 // Constructors
 
 exports.newStreamImpl = function() {
