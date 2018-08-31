@@ -35,8 +35,8 @@ testOperational = runTest do
             let b = updates a
             results <- makeAff \cb -> do
                 refList <- Ref.new (Nil :: List Int)
-                unlisten <- listen b \value -> do
-                    Ref.modify_ (\xs -> snoc xs value) refList
+                unlisten <- listen b \v -> do
+                    Ref.modify_ (\xs -> snoc xs v) refList
                     xs <- Ref.read refList
                     if (length xs == 2) then (cb $ Right xs) else (pure unit)
                 send 2 a
@@ -49,10 +49,10 @@ testOperational = runTest do
                 a <- liftEffect $ newCellSink 2 Nothing
                 aff <- runTransaction (do
                     _ <- launchAff $ makeAff \cb2 -> do
-                        let b = value a
+                        b <- value a
                         refList <- Ref.new (Nil :: List Int)
-                        unlisten <- listen b \value -> do
-                            Ref.modify_ (\xs -> snoc xs value) refList
+                        unlisten <- listen b \v -> do
+                            Ref.modify_ (\xs -> snoc xs v) refList
                             xs <- Ref.read refList
                             if (length xs == 2) then (cb1 $ Right xs) else (pure unit)
                         pure nonCanceler
