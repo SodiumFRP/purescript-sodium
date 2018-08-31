@@ -27,10 +27,6 @@ testCategories = runTest do
            liftEffect $ checkApply prxCell
         test "[cell] applicative" do
            liftEffect $ checkApplicative prxCell
-        test "[cell] bind" do
-           liftEffect $ checkBind prxCell
-        test "[cell] monad" do
-           liftEffect $ checkMonad prxCell
 
 prxCell :: Proxy2 ArbitraryCell
 prxCell = Proxy2
@@ -58,8 +54,3 @@ instance applyArbitraryCell :: Apply ArbitraryCell where
 
 instance applicativeArbitraryCell :: Applicative ArbitraryCell where
     pure a = ArbitraryCell $ pure a 
-
-instance bindArbitraryCell :: Bind ArbitraryCell where
-    bind (ArbitraryCell a) f = ArbitraryCell $ bind a (\x -> getCellFromArbitrary(f x))
-
-instance monadArbitraryCell :: Monad ArbitraryCell
