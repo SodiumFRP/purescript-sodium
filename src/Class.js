@@ -88,7 +88,3 @@ exports.mapCellImpl = function (f, c) {
 exports.applyImpl = function(cf, c) {
     return c['fantasy-land/ap'](cf);
 }
-
-exports.bindImpl = function(c, f) {
-    return c['fantasy-land/chain'](f);
-}

@@ -73,7 +73,8 @@ testCell = runTest do
 
         test "sample" do
             let a = newCell 2
-            Assert.equal (sample a) 2
+            value <- liftEffect $ sample a
+            Assert.equal value 2
     suite "[cell] lift" do
         test "lift" do
             let c = lift
@@ -142,7 +143,7 @@ testCell = runTest do
             Assert.equal result 21 
     suite "[cell] switch" do
         test "switchC" do
-            let c = switchC $ newCell (newCell 2)
+            c <- liftEffect $ switchC $ newCell (newCell 2)
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
                     cb $ Right value 

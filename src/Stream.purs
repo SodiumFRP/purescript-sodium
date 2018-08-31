@@ -112,8 +112,8 @@ snapshot6 f c1 c2 c3 c4 c5 s = runFn7 snapshot6Impl (mkFn6 f) (toCell c1) (toCel
 -- | visible as the cell's current value as viewed by 'snapshot' until the following transaction. 
 -- | To put this another way, 'snapshot' always sees the value of a cell as it was before
 -- | any state changes from the current transaction.
-hold :: forall a s. (SodiumStream s) => a -> s a -> Cell a
-hold x s = runFn2 holdImpl x (toStream s)
+hold :: forall a s. (SodiumStream s) => a -> s a -> Effect (Cell a)
+hold x s = runEffectFn2 holdImpl x (toStream s)
 
 -- | Transform an event with a generalized state loop (a Mealy machine). The function
 -- | is passed the input and the old state and returns the new state and output value.
@@ -160,7 +160,7 @@ foreign import snapshot3Impl :: forall a b c d. Fn4 (Fn3 a b c d) (Cell b) (Cell
 foreign import snapshot4Impl :: forall a b c d e. Fn5 (Fn4 a b c d e) (Cell b) (Cell c) (Cell d) (Stream a) (Stream e)
 foreign import snapshot5Impl :: forall a b c d e f. Fn6 (Fn5 a b c d e f) (Cell b) (Cell c) (Cell d) (Cell e) (Stream a) (Stream f)
 foreign import snapshot6Impl :: forall a b c d e f g. Fn7 (Fn6 a b c d e f g) (Cell b) (Cell c) (Cell d) (Cell e) (Cell f) (Stream a) (Stream g)
-foreign import holdImpl :: forall a. Fn2 a (Stream a) (Cell a)
+foreign import holdImpl :: forall a. EffectFn2 a (Stream a) (Cell a)
 foreign import collectImpl :: forall a b c. Fn3 (Fn2 a c {value :: b, state :: c}) c (Stream a) (Stream b)
 foreign import accumImpl :: forall a b. Fn3 (Fn2 a b b) b (Stream a) (Cell b)
 foreign import onceImpl :: forall a. Fn1 (Stream a) (Stream a)

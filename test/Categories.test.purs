@@ -5,14 +5,13 @@ import Prelude
 import SodiumFRP.Class(Cell, newCell)
 import SodiumFRP.Cell (sample)
 import Effect (Effect)
+import Effect.Unsafe (unsafePerformEffect)
 import Effect.Class (liftEffect)
 import Test.Unit (suite, test)
 import Test.Unit.Main (runTest)
 import Test.QuickCheck.Laws.Data.Functor (checkFunctor)
 import Test.QuickCheck.Laws.Control.Apply (checkApply)
 import Test.QuickCheck.Laws.Control.Applicative (checkApplicative)
-import Test.QuickCheck.Laws.Control.Bind (checkBind)
-import Test.QuickCheck.Laws.Control.Monad (checkMonad)
 import Type.Proxy (Proxy2 (..))
 import Test.QuickCheck.Arbitrary(class Arbitrary, arbitrary)
 
@@ -27,10 +26,6 @@ testCategories = runTest do
            liftEffect $ checkApply prxCell
         test "[cell] applicative" do
            liftEffect $ checkApplicative prxCell
-        test "[cell] bind" do
-           liftEffect $ checkBind prxCell
-        test "[cell] monad" do
-           liftEffect $ checkMonad prxCell
 
 prxCell :: Proxy2 ArbitraryCell
 prxCell = Proxy2
@@ -48,7 +43,8 @@ instance arbCell :: (Arbitrary a) => Arbitrary (ArbitraryCell a) where
     pure $ ArbitraryCell (newCell a) 
 
 instance eqArbitraryCell :: (Eq a) => Eq (ArbitraryCell a) where
-    eq (ArbitraryCell cell1) (ArbitraryCell cell2) = eq (sample cell1) (sample cell2)
+    eq (ArbitraryCell cell1) (ArbitraryCell cell2) 
+        = eq (unsafePerformEffect $ sample cell1) (unsafePerformEffect $ sample cell2)
 
 instance functorArbitraryCell :: Functor ArbitraryCell where
     map func (ArbitraryCell a) = ArbitraryCell $ map func a
@@ -58,8 +54,3 @@ instance applyArbitraryCell :: Apply ArbitraryCell where
 
 instance applicativeArbitraryCell :: Applicative ArbitraryCell where
     pure a = ArbitraryCell $ pure a 
-
-instance bindArbitraryCell :: Bind ArbitraryCell where
-    bind (ArbitraryCell a) f = ArbitraryCell $ bind a (\x -> getCellFromArbitrary(f x))
-
-instance monadArbitraryCell :: Monad ArbitraryCell

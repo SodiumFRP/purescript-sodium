@@ -13,10 +13,9 @@ import SodiumFRP.Class (
     toCell,
     toStream
 )
-
-import Data.Function.Uncurried (
-    Fn1, runFn1    
-)
+import Effect (Effect)
+import Effect.Uncurried (EffectFn1, runEffectFn1)
+import Data.Function.Uncurried ( Fn1, runFn1)
 
 -- | A stream that gives the updates/steps for a 'Cell' 
 -- |
@@ -35,8 +34,8 @@ updates c = runFn1 updatesImpl (toCell c)
 -- | It breaks the property of non-detectability of cell steps/updates.
 -- | The rule with this primitive is that you should only use it in functions
 -- | that do not allow the caller to detect the cell updates.
-value :: forall a c. (SodiumCell c) => c a -> Stream a
-value c = runFn1 valueImpl (toCell c)
+value :: forall a c. (SodiumCell c) => c a -> Effect (Stream a)
+value c = runEffectFn1 valueImpl (toCell c)
 
 -- | Push each event onto a new transaction guaranteed to come before the next externally
 -- | initiated transaction. Same as 'split' but it works on a single value.
@@ -52,6 +51,6 @@ split :: forall a s. (SodiumStream s) => s (Array a) -> Stream a
 split sa = runFn1 splitImpl (toStream sa)
 
 foreign import updatesImpl :: forall a. Fn1 (Cell a) (Stream a)
-foreign import valueImpl :: forall a. Fn1 (Cell a) (Stream a)
+foreign import valueImpl :: forall a. EffectFn1 (Cell a) (Stream a)
 foreign import deferImpl :: forall a. Fn1 (Stream a) (Stream a)
 foreign import splitImpl :: forall a. Fn1 (Stream (Array a)) (Stream a)

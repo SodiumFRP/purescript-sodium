@@ -26,7 +26,7 @@ testTransaction = runTest do
                 l <- newCellLoop
                 let c = newCell 2
                 loopCell c l
-                pure $ sample l 
+                sample l 
             )
             Assert.equal result 2
         
