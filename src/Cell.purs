@@ -20,7 +20,7 @@ import SodiumFRP.Class(
 
 import Prelude
 import Effect (Effect)
-import Effect.Uncurried (EffectFn2, runEffectFn2)
+import Effect.Uncurried (EffectFn1, runEffectFn1, EffectFn2, runEffectFn2)
 import Data.Function.Uncurried (
     Fn1, runFn1,
     Fn2, mkFn2, 
@@ -69,12 +69,12 @@ foreign import lift5Impl :: forall a b c d e f. Fn6 (Fn5 a b c d e f) (Cell b) (
 foreign import lift6Impl :: forall a b c d e f g. Fn7 (Fn6 a b c d e f g) (Cell b) (Cell c) (Cell d) (Cell e) (Cell f) (Cell a) (Cell g)
 
 -- Switch
-switchC :: forall a c. (SodiumCell c) => c (Cell a) -> Cell a
-switchC c = runFn1 switchCImpl (toCell c) 
+switchC :: forall a c. (SodiumCell c) => c (Cell a) -> Effect (Cell a)
+switchC c = runEffectFn1 switchCImpl (toCell c) 
 
 switchS :: forall a c. (SodiumCell c) => c (Stream a) -> Stream a
 switchS c = runFn1 switchSImpl (toCell c) 
 
-foreign import switchCImpl :: forall a. Fn1 (Cell (Cell a)) (Cell a)
+foreign import switchCImpl :: forall a. EffectFn1 (Cell (Cell a)) (Cell a)
 foreign import switchSImpl :: forall a. Fn1 (Cell (Stream a)) (Stream a)
 

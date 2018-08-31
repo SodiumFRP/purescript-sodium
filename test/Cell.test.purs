@@ -142,7 +142,7 @@ testCell = runTest do
             Assert.equal result 21 
     suite "[cell] switch" do
         test "switchC" do
-            let c = switchC $ newCell (newCell 2)
+            c <- liftEffect $ switchC $ newCell (newCell 2)
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
                     cb $ Right value 
