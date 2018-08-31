@@ -73,7 +73,8 @@ testCell = runTest do
 
         test "sample" do
             let a = newCell 2
-            Assert.equal (sample a) 2
+            value <- liftEffect $ sample a
+            Assert.equal value 2
     suite "[cell] lift" do
         test "lift" do
             let c = lift

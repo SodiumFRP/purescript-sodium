@@ -5,6 +5,7 @@ import Prelude
 import SodiumFRP.Class(Cell, newCell)
 import SodiumFRP.Cell (sample)
 import Effect (Effect)
+import Effect.Unsafe (unsafePerformEffect)
 import Effect.Class (liftEffect)
 import Test.Unit (suite, test)
 import Test.Unit.Main (runTest)
@@ -42,7 +43,8 @@ instance arbCell :: (Arbitrary a) => Arbitrary (ArbitraryCell a) where
     pure $ ArbitraryCell (newCell a) 
 
 instance eqArbitraryCell :: (Eq a) => Eq (ArbitraryCell a) where
-    eq (ArbitraryCell cell1) (ArbitraryCell cell2) = eq (sample cell1) (sample cell2)
+    eq (ArbitraryCell cell1) (ArbitraryCell cell2) 
+        = eq (unsafePerformEffect $ sample cell1) (unsafePerformEffect $ sample cell2)
 
 instance functorArbitraryCell :: Functor ArbitraryCell where
     map func (ArbitraryCell a) = ArbitraryCell $ map func a

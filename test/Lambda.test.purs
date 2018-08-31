@@ -5,6 +5,7 @@ import Prelude
 import Data.Either (Either(Right))
 import Data.Maybe (Maybe(Nothing))
 import Effect (Effect)
+import Effect.Unsafe(unsafePerformEffect)
 import Effect.Aff (makeAff, nonCanceler)
 import Effect.Class (liftEffect)
 
@@ -34,7 +35,7 @@ testLambda = runTest do
             a <- liftEffect $ newStreamSink Nothing
             let b = newCell 2
             let c = mapLambda1 
-                        ((\x -> x + (sample b)) :: Int -> Int) 
+                        ((\x -> x + (unsafePerformEffect $ sample b)) :: Int -> Int) 
                         [mkDep a, mkDep b]
                         (toStream a)
             result <- makeAff \cb -> do
@@ -48,7 +49,7 @@ testLambda = runTest do
             a <- liftEffect $ newStreamSink Nothing
             let b = newCell 2
             let c = snapshotLambda
-                        ((\x -> \y -> x + y + (sample b))) 
+                        ((\x -> \y -> x + y + (unsafePerformEffect $ sample b))) 
                         [mkDep a, mkDep b]
                         (b)
                         a 
@@ -62,7 +63,7 @@ testLambda = runTest do
         test "lift w/ lambda2" do
             let b = newCell 2
             let c = liftLambda
-                        ((\x y -> x + y + (sample b))) 
+                        ((\x y -> x + y + (unsafePerformEffect $ sample b))) 
                         [mkDep b]
                         (b)
                         (newCell 3)

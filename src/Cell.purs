@@ -32,10 +32,10 @@ import Data.Function.Uncurried (
 )
 
 -- | Sample 
-sample :: forall a c. (SodiumCell c) => c a -> a
-sample c = runFn1 sampleImpl (toCell c)
+sample :: forall a c. (SodiumCell c) => c a -> Effect a
+sample c = runEffectFn1 sampleImpl (toCell c)
 
-foreign import sampleImpl :: forall a. Fn1 (Cell a) (a)
+foreign import sampleImpl :: forall a. EffectFn1 (Cell a) (a)
 
 -- Loop
 -- | Resolve the loop to specify what the CellLoop was a forward reference to. 
