@@ -46,7 +46,7 @@ import Effect.Unsafe (unsafePerformEffect)
 
 -- | Transform the stream's event values into the specified constant value.
 -- | b is a constant value.
-mapTo :: forall a b s. (SodiumStream s) => b -> s a -> Stream b
+mapTo :: forall a b str. (SodiumStream str) => b -> str a -> Stream b
 mapTo x s = runFn2 mapToImpl x (toStream s)
 
 -- | Variant of 'merge' that merges two streams and will drop an event
@@ -56,7 +56,7 @@ mapTo x s = runFn2 mapToImpl x (toStream s)
 -- | In other words it's eqivilent to `merge (\l r -> l) s1 s2`
 -- |
 -- | If you want to specify your own merging function, use 'merge'
-orElse :: forall a s. (SodiumStream s) => s a -> s a -> Stream a
+orElse :: forall a str. (SodiumStream str) => str a -> str a -> Stream a
 orElse s1 s2 = runFn2 orElseImpl (toStream s1) (toStream s2)
 
 
@@ -67,22 +67,22 @@ orElse s1 s2 = runFn2 orElseImpl (toStream s1) (toStream s2)
 -- |
 -- | It may construct FRP logic or use sample()
 -- | Apart from this the function must be referentially transparent.
-merge :: forall a s. (SodiumStream s) => (a -> a -> a) -> s a -> s a -> Stream a
+merge :: forall a str. (SodiumStream str) => (a -> a -> a) -> str a -> str a -> Stream a
 merge f s1 s2 = runFn3 mergeImpl (mkFn2 f) (toStream s1) (toStream s2)
 
 -- | Return a stream that only outputs events for which the predicate returns true.
-filter :: forall a s. (SodiumStream s) => (a -> Boolean) -> s a -> Stream a
+filter :: forall a str. (SodiumStream str) => (a -> Boolean) -> str a -> Stream a
 filter f s = runFn2 filterImpl f (toStream s)
 
 -- | Return a stream that only outputs events from the input stream
 -- | when the specified cell's value is true.
-gate :: forall a s c. (SodiumStream s) => (SodiumCell c) => s a -> c Boolean -> Stream a
+gate :: forall a str cel. (SodiumStream str) => (SodiumCell cel) => str a -> cel Boolean -> Stream a
 gate s c = runFn2 gateImpl (toStream s) (toCell c) 
 
 
 -- | Variant of 'snapshot' that captures the cell's value
 -- | at the time of the event firing, ignoring the stream's value.
-snapshot1 :: forall a s c. (SodiumStream s) => (SodiumCell c) => s a -> c a -> Stream a
+snapshot1 :: forall a str cel. (SodiumStream str) => (SodiumCell cel) => str a -> cel a -> Stream a
 snapshot1 s c = runFn2 snapshot1Impl (toStream s) (toCell c)
 
 -- | Return a stream whose events are the result of the combination using the specified
@@ -112,7 +112,7 @@ snapshot6 f s c1 c2 c3 c4 c5 = runFn7 snapshot6Impl (mkFn6 f) (toStream s) (toCe
 -- | visible as the cell's current value as viewed by 'snapshot' until the following transaction. 
 -- | To put this another way, 'snapshot' always sees the value of a cell as it was before
 -- | any state changes from the current transaction.
-hold :: forall a s. (SodiumStream s) => s a -> a -> Effect (Cell a)
+hold :: forall a str. (SodiumStream str) => str a -> a -> Effect (Cell a)
 hold s x = runEffectFn2 holdImpl (toStream s) x 
 
 -- | Transform an event with a generalized state loop (a Mealy machine). The function
@@ -120,7 +120,7 @@ hold s x = runEffectFn2 holdImpl (toStream s) x
 -- | The function may construct FRP logic or use 'sample' in which case 
 -- | it is equivalent to 'snapshot'ing the cell. 
 -- | Apart from this the function must be referentially transparent.
-collect :: forall a b c s. (SodiumStream s) => (a -> c -> {value :: b, state :: c}) -> c -> s a -> Stream b
+collect :: forall a b c str. (SodiumStream str) => (a -> c -> {value :: b, state :: c}) -> c -> str a -> Stream b
 collect f x s = runFn3 collectImpl (mkFn2 f) x (toStream s)
 
 
@@ -128,23 +128,23 @@ collect f x s = runFn3 collectImpl (mkFn2 f) x (toStream s)
 -- | The function may construct FRP logic or use 'sample' 
 -- | in which case it is equivalent to 'snapshot'ing the cell. 
 -- | Apart from this the function must be referentially transparent.
-accum :: forall a b s. (SodiumStream s) => (a -> b -> b) -> b -> s a -> Cell b
+accum :: forall a b str. (SodiumStream str) => (a -> b -> b) -> b -> str a -> Cell b
 accum f x s = runFn3 accumImpl (mkFn2 f) x (toStream s)
 
 -- | Return a stream that outputs only one value: the next event of the
 -- | input stream, starting from the transaction in which once() was invoked.
-once :: forall a s. (SodiumStream s) => s a -> Stream a
+once :: forall a str. (SodiumStream str) => str a -> Stream a
 once s = runFn1 onceImpl (toStream s)
 
 -- | Resolve the loop to specify what the StreamLoop was a forward reference to. 
 -- | It must be invoked inside the same transaction as the place where the StreamLoop is used.
 -- | This requires you to create an explicit transaction 
-loopStream :: forall a s. (SodiumStream s) => StreamLoop a -> s a -> Effect Unit
+loopStream :: forall a str. (SodiumStream str) => StreamLoop a -> str a -> Effect Unit
 loopStream loopTarget s = runEffectFn2 loopStreamImpl loopTarget (toStream s)
 
 -- | Runs the side effects as a map over stream events
 -- | This is a safe thing to do in Sodium
-execute :: forall a s. (SodiumStream s) => s (Effect a) -> Stream a
+execute :: forall a str. (SodiumStream str) => str (Effect a) -> Stream a
 execute s = map unsafePerformEffect (toStream s)
 
 -- Foreign imports

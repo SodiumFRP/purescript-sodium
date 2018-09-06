@@ -32,7 +32,7 @@ import Data.Function.Uncurried (
 )
 
 -- | Sample 
-sample :: forall a c. (SodiumCell c) => c a -> Effect a
+sample :: forall a cel. (SodiumCell cel) => cel a -> Effect a
 sample c = runEffectFn1 sampleImpl (toCell c)
 
 foreign import sampleImpl :: forall a. EffectFn1 (Cell a) (a)
@@ -41,7 +41,7 @@ foreign import sampleImpl :: forall a. EffectFn1 (Cell a) (a)
 -- | Resolve the loop to specify what the CellLoop was a forward reference to. 
 -- | It must be invoked inside the same transaction as the place where the CellLoop is used.
 -- | This requires you to create an explicit transaction 
-loopCell :: forall a c. (SodiumCell c) => CellLoop a -> c a -> Effect Unit
+loopCell :: forall a cel. (SodiumCell cel) => CellLoop a -> cel a -> Effect Unit
 loopCell loopTarget c = runEffectFn2 loopCellImpl loopTarget (toCell c)
 
 foreign import loopCellImpl :: forall a. EffectFn2 (CellLoop a) (Cell a) Unit
@@ -69,10 +69,10 @@ foreign import lift5Impl :: forall a b c d e f. Fn6 (Fn5 a b c d e f) (Cell a) (
 foreign import lift6Impl :: forall a b c d e f g. Fn7 (Fn6 a b c d e f g) (Cell a) (Cell b) (Cell c) (Cell d) (Cell e) (Cell f) (Cell g)
 
 -- Switch
-switchC :: forall a c. (SodiumCell c) => c (Cell a) -> Effect (Cell a)
+switchC :: forall a cel. (SodiumCell cel) => cel (Cell a) -> Effect (Cell a)
 switchC c = runEffectFn1 switchCImpl (toCell c) 
 
-switchS :: forall a c. (SodiumCell c) => c (Stream a) -> Stream a
+switchS :: forall a cel. (SodiumCell cel) => cel (Stream a) -> Stream a
 switchS c = runFn1 switchSImpl (toCell c) 
 
 foreign import switchCImpl :: forall a. EffectFn1 (Cell (Cell a)) (Cell a)
