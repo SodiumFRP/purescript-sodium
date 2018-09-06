@@ -66,7 +66,7 @@ exports.onceImpl = function(s) {
     return s.once();
 }
 
-exports.loopStreamImpl = function(s, sLoop) {
+exports.loopStreamImpl = function(sLoop, s) {
     sLoop.loop(s);
 }
 

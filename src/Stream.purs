@@ -138,8 +138,8 @@ once s = runFn1 onceImpl (toStream s)
 -- | Resolve the loop to specify what the StreamLoop was a forward reference to. 
 -- | It must be invoked inside the same transaction as the place where the StreamLoop is used.
 -- | This requires you to create an explicit transaction 
-loopStream :: forall a s. (SodiumStream s) => s a -> StreamLoop a -> Effect Unit
-loopStream s = runEffectFn2 loopStreamImpl (toStream s)
+loopStream :: forall a s. (SodiumStream s) => StreamLoop a -> s a -> Effect Unit
+loopStream loopTarget s = runEffectFn2 loopStreamImpl loopTarget (toStream s)
 
 -- | Runs the side effects as a map over stream events
 -- | This is a safe thing to do in Sodium
@@ -163,4 +163,4 @@ foreign import holdImpl :: forall a. EffectFn2 (Stream a) a (Cell a)
 foreign import collectImpl :: forall a b c. Fn3 (Fn2 a c {value :: b, state :: c}) c (Stream a) (Stream b)
 foreign import accumImpl :: forall a b. Fn3 (Fn2 a b b) b (Stream a) (Cell b)
 foreign import onceImpl :: forall a. Fn1 (Stream a) (Stream a)
-foreign import loopStreamImpl :: forall a. EffectFn2 (Stream a) (StreamLoop a) Unit
+foreign import loopStreamImpl :: forall a. EffectFn2 (StreamLoop a) (Stream a) Unit

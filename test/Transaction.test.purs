@@ -34,7 +34,7 @@ testTransaction = runTest do
             result <- liftEffect $ runTransaction (do
                 l <- newStreamLoop
                 let s = newStream 
-                loopStream s l
+                loopStream l s
                 pure unit 
             )
             pure unit
