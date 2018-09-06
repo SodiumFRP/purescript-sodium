@@ -24,27 +24,27 @@ exports.gateImpl = function (c, s) {
     return s.gate(c);
 }
 
-exports.snapshot1Impl = function (c, s) {
+exports.snapshot1Impl = function (s, c) {
     return s.snapshot1(c);
 }
 
-exports.snapshotImpl = function (fn, c, s) {
+exports.snapshotImpl = function (fn, s, c) {
     return s.snapshot(c, fn);
 }
 
-exports.snapshot3Impl = function (fn, c1, c2, s) {
+exports.snapshot3Impl = function (fn, s, c1, c2) {
     return s.snapshot3(c1, c2, fn);
 }
 
-exports.snapshot4Impl = function (fn, c1, c2, c3, s) {
+exports.snapshot4Impl = function (fn, s, c1, c2, c3) {
     return s.snapshot4(c1, c2, c3, fn);
 }
 
-exports.snapshot5Impl = function (fn, c1, c2, c3, c4, s) {
+exports.snapshot5Impl = function (fn, s, c1, c2, c3, c4) {
     return s.snapshot5(c1, c2, c3, c4, fn);
 }
 
-exports.snapshot6Impl = function (fn, c1, c2, c3, c4, c5, s) {
+exports.snapshot6Impl = function (fn, s, c1, c2, c3, c4, c5) {
     return s.snapshot6(c1, c2, c3, c4, c5, fn);
 }
 

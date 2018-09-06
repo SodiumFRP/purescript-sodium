@@ -81,8 +81,8 @@ gate c s = runFn2 gateImpl (toCell c) (toStream s)
 
 -- | Variant of 'snapshot' that captures the cell's value
 -- | at the time of the event firing, ignoring the stream's value.
-snapshot1 :: forall a s c. (SodiumStream s) => (SodiumCell c) => c a -> s a -> Stream a
-snapshot1 c s = runFn2 snapshot1Impl (toCell c) (toStream s)
+snapshot1 :: forall a s c. (SodiumStream s) => (SodiumCell c) => s a -> c a -> Stream a
+snapshot1 s c = runFn2 snapshot1Impl (toStream s) (toCell c)
 
 -- | Return a stream whose events are the result of the combination using the specified
 -- | function of the input stream's event value and the value of the cell at that time.
@@ -91,21 +91,20 @@ snapshot1 c s = runFn2 snapshot1Impl (toCell c) (toStream s)
 -- | 'hold' don't become visible as the cell's current value until the following transaction. 
 -- | To put this another way, 'snapshot' always sees the value of a cell as it was 
 -- | before any state changes from the current transaction.
-snapshot :: forall a b c cel str. (SodiumStream str) => (SodiumCell cel) => (a -> b -> c) -> cel b -> str a -> Stream c
-snapshot f c s = runFn3 snapshotImpl (mkFn2 f) (toCell c) (toStream s)
+snapshot :: forall a b c cel str. (SodiumStream str) => (SodiumCell cel) => (a -> b -> c) -> str a -> cel b -> Stream c
+snapshot f s c = runFn3 snapshotImpl (mkFn2 f) (toStream s) (toCell c) 
          
-snapshot3 :: forall a b c d cel str. (SodiumStream str) => (SodiumCell cel) => (a -> b -> c -> d) -> cel b -> cel c -> str a -> Stream d
-snapshot3 f c1 c2 s = runFn4 snapshot3Impl (mkFn3 f) (toCell c1) (toCell c2) (toStream s)
+snapshot3 :: forall a b c d cel str. (SodiumStream str) => (SodiumCell cel) => (a -> b -> c -> d) -> str a -> cel b -> cel c -> Stream d
+snapshot3 f s c1 c2 = runFn4 snapshot3Impl (mkFn3 f) (toStream s) (toCell c1) (toCell c2) 
 
-snapshot4 :: forall a b c d e cel str. (SodiumStream str) => (SodiumCell cel) => (a -> b -> c -> d -> e) -> cel b -> cel c -> cel d -> str a -> Stream e
-snapshot4 f c1 c2 c3 s = runFn5 snapshot4Impl (mkFn4 f) (toCell c1) (toCell c2) (toCell c3) (toStream s)
+snapshot4 :: forall a b c d e cel str. (SodiumStream str) => (SodiumCell cel) => (a -> b -> c -> d -> e) -> str a -> cel b -> cel c -> cel d -> Stream e
+snapshot4 f s c1 c2 c3 = runFn5 snapshot4Impl (mkFn4 f) (toStream s) (toCell c1) (toCell c2) (toCell c3) 
 
-snapshot5 :: forall a b c d e f cel str. (SodiumStream str) => (SodiumCell cel) => (a -> b -> c -> d -> e -> f) -> cel b -> cel c -> cel d -> cel e -> str a -> Stream f
-snapshot5 f c1 c2 c3 c4 s = runFn6 snapshot5Impl (mkFn5 f) (toCell c1) (toCell c2) (toCell c3) (toCell c4) (toStream s)
+snapshot5 :: forall a b c d e f cel str. (SodiumStream str) => (SodiumCell cel) => (a -> b -> c -> d -> e -> f) -> str a -> cel b -> cel c -> cel d -> cel e -> Stream f
+snapshot5 f s c1 c2 c3 c4 = runFn6 snapshot5Impl (mkFn5 f) (toStream s) (toCell c1) (toCell c2) (toCell c3) (toCell c4) 
 
-snapshot6 :: forall a b c d e f g cel str. (SodiumStream str) => (SodiumCell cel) => (a -> b -> c -> d -> e -> f -> g) -> cel b -> cel c -> cel d -> cel e -> cel f -> str a -> Stream g
-snapshot6 f c1 c2 c3 c4 c5 s = runFn7 snapshot6Impl (mkFn6 f) (toCell c1) (toCell c2) (toCell c3) (toCell c4) (toCell c5) (toStream s)
-
+snapshot6 :: forall a b c d e f g cel str. (SodiumStream str) => (SodiumCell cel) => (a -> b -> c -> d -> e -> f -> g) -> str a -> cel b -> cel c -> cel d -> cel e -> cel f -> Stream g
+snapshot6 f s c1 c2 c3 c4 c5 = runFn7 snapshot6Impl (mkFn6 f) (toStream s) (toCell c1) (toCell c2) (toCell c3) (toCell c4) (toCell c5) 
 
 -- | Create a "Cell" with the specified initial value, that is updated by this stream's event values.
 -- | There is an implicit delay: State updates caused by event firings don't become
@@ -154,12 +153,12 @@ foreign import orElseImpl :: forall a. Fn2 (Stream a) (Stream a) (Stream a)
 foreign import mergeImpl :: forall a. Fn3 (Fn2 a a a) (Stream a) (Stream a) (Stream a)
 foreign import filterImpl :: forall a. Fn2 (a -> Boolean) (Stream a) (Stream a)
 foreign import gateImpl :: forall a. Fn2 (Cell Boolean) (Stream a) (Stream a)
-foreign import snapshot1Impl :: forall a. Fn2 (Cell a) (Stream a) (Stream a)
-foreign import snapshotImpl :: forall a b c. Fn3 (Fn2 a b c) (Cell b) (Stream a) (Stream c)
-foreign import snapshot3Impl :: forall a b c d. Fn4 (Fn3 a b c d) (Cell b) (Cell c) (Stream a) (Stream d)
-foreign import snapshot4Impl :: forall a b c d e. Fn5 (Fn4 a b c d e) (Cell b) (Cell c) (Cell d) (Stream a) (Stream e)
-foreign import snapshot5Impl :: forall a b c d e f. Fn6 (Fn5 a b c d e f) (Cell b) (Cell c) (Cell d) (Cell e) (Stream a) (Stream f)
-foreign import snapshot6Impl :: forall a b c d e f g. Fn7 (Fn6 a b c d e f g) (Cell b) (Cell c) (Cell d) (Cell e) (Cell f) (Stream a) (Stream g)
+foreign import snapshot1Impl :: forall a. Fn2 (Stream a) (Cell a) (Stream a)
+foreign import snapshotImpl :: forall a b c. Fn3 (Fn2 a b c) (Stream a) (Cell b) (Stream c)
+foreign import snapshot3Impl :: forall a b c d. Fn4 (Fn3 a b c d) (Stream a) (Cell b) (Cell c) (Stream d)
+foreign import snapshot4Impl :: forall a b c d e. Fn5 (Fn4 a b c d e) (Stream a) (Cell b) (Cell c) (Cell d) (Stream e)
+foreign import snapshot5Impl :: forall a b c d e f. Fn6 (Fn5 a b c d e f) (Stream a) (Cell b) (Cell c) (Cell d) (Cell e) (Stream f)
+foreign import snapshot6Impl :: forall a b c d e f g. Fn7 (Fn6 a b c d e f g) (Stream a) (Cell b) (Cell c) (Cell d) (Cell e) (Cell f) (Stream g)
 foreign import holdImpl :: forall a. EffectFn2 a (Stream a) (Cell a)
 foreign import collectImpl :: forall a b c. Fn3 (Fn2 a c {value :: b, state :: c}) c (Stream a) (Stream b)
 foreign import accumImpl :: forall a b. Fn3 (Fn2 a b b) b (Stream a) (Cell b)
