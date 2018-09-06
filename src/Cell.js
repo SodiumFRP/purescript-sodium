@@ -6,7 +6,7 @@ exports.sampleImpl = function(c) {
     return c.sample();
 }
 
-exports.loopCellImpl = function(c, cLoop) {
+exports.loopCellImpl = function(cLoop, c) {
     cLoop.loop(c);
 }
 

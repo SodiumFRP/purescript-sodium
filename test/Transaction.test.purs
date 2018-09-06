@@ -25,7 +25,7 @@ testTransaction = runTest do
             result <- liftEffect $ runTransaction (do
                 l <- newCellLoop
                 let c = newCell 2
-                loopCell c l
+                loopCell l c
                 sample l 
             )
             Assert.equal result 2

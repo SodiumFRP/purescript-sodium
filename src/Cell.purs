@@ -41,10 +41,10 @@ foreign import sampleImpl :: forall a. EffectFn1 (Cell a) (a)
 -- | Resolve the loop to specify what the CellLoop was a forward reference to. 
 -- | It must be invoked inside the same transaction as the place where the CellLoop is used.
 -- | This requires you to create an explicit transaction 
-loopCell :: forall a c. (SodiumCell c) => c a -> CellLoop a -> Effect Unit
-loopCell c = runEffectFn2 loopCellImpl (toCell c)
+loopCell :: forall a c. (SodiumCell c) => CellLoop a -> c a -> Effect Unit
+loopCell loopTarget c = runEffectFn2 loopCellImpl loopTarget (toCell c)
 
-foreign import loopCellImpl :: forall a. EffectFn2 (Cell a) (CellLoop a) Unit
+foreign import loopCellImpl :: forall a. EffectFn2 (CellLoop a) (Cell a) Unit
 
 -- Lift
 lift :: forall a b c cel. (SodiumCell cel) => (a -> b -> c) -> cel a -> cel b -> Cell c
