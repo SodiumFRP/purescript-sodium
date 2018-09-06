@@ -47,7 +47,7 @@ exports.snapshot6Impl = function (fn, s, c1, c2, c3, c4, c5) {
     return s.snapshot6(c1, c2, c3, c4, c5, fn);
 }
 
-exports.holdImpl = function (x, s) {
+exports.holdImpl = function (s, x) {
     return s.hold(x);
 }
 

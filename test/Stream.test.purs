@@ -288,7 +288,7 @@ testStream = runTest do
     suite "[stream] hold" do
         test "hold" do
             a <- liftEffect $ newStreamSink Nothing
-            b <- liftEffect $ hold 2 a 
+            b <- liftEffect $ hold a 2
             result <- makeAff \cb -> do
                 unlisten <- listen b \value ->
                     cb $ Right value 
