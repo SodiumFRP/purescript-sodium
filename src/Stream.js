@@ -19,7 +19,7 @@ exports.filterImpl = function(f, s) {
     return s.filter(f); 
 }
 
-exports.gateImpl = function (c, s) {
+exports.gateImpl = function (s, c) {
     return s.gate(c);
 }
 

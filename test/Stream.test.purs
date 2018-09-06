@@ -184,7 +184,7 @@ testStream = runTest do
         test "gate" do
             a <- liftEffect $ newStreamSink Nothing
             b <- liftEffect $ newCellSink false Nothing
-            let c = gate b a
+            let c = gate a b
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
                     cb $ Right value 

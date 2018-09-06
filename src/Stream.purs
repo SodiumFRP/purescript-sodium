@@ -75,8 +75,8 @@ filter f s = runFn2 filterImpl f (toStream s)
 
 -- | Return a stream that only outputs events from the input stream
 -- | when the specified cell's value is true.
-gate :: forall a s c. (SodiumStream s) => (SodiumCell c) => c Boolean -> s a -> Stream a
-gate c s = runFn2 gateImpl (toCell c) (toStream s)
+gate :: forall a s c. (SodiumStream s) => (SodiumCell c) => s a -> c Boolean -> Stream a
+gate s c = runFn2 gateImpl (toStream s) (toCell c) 
 
 
 -- | Variant of 'snapshot' that captures the cell's value
@@ -152,7 +152,7 @@ foreign import mapToImpl :: forall a b. Fn2 b (Stream a) (Stream b)
 foreign import orElseImpl :: forall a. Fn2 (Stream a) (Stream a) (Stream a)
 foreign import mergeImpl :: forall a. Fn3 (Fn2 a a a) (Stream a) (Stream a) (Stream a)
 foreign import filterImpl :: forall a. Fn2 (a -> Boolean) (Stream a) (Stream a)
-foreign import gateImpl :: forall a. Fn2 (Cell Boolean) (Stream a) (Stream a)
+foreign import gateImpl :: forall a. Fn2 (Stream a) (Cell Boolean) (Stream a)
 foreign import snapshot1Impl :: forall a. Fn2 (Stream a) (Cell a) (Stream a)
 foreign import snapshotImpl :: forall a b c. Fn3 (Fn2 a b c) (Stream a) (Cell b) (Stream c)
 foreign import snapshot3Impl :: forall a b c d. Fn4 (Fn3 a b c d) (Stream a) (Cell b) (Cell c) (Stream d)
