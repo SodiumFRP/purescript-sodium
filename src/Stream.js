@@ -11,9 +11,8 @@ exports.orElseImpl = function(s, other) {
     return s.orElse(other);
 }
 
-exports.mergeImpl = function(f, other, s) {
-    //flipped so that other's events are on the left
-    return other.merge(s, f);
+exports.mergeImpl = function(f, s, other) {
+    return s.merge(other, f);
 }
 
 exports.filterImpl = function(f, s) {
