@@ -83,7 +83,7 @@ testStream = runTest do
 
         test "mapTo" do
             a <- liftEffect $ newStreamSink Nothing
-            let b = mapTo 4 a
+            let b = mapTo a 4
             result <- makeAff \cb -> do
                 unlisten <- listen b \value ->
                     cb $ Right value 

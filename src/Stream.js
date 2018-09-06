@@ -3,7 +3,7 @@ const Sodium = require("sodiumjs");
 
 const Tuple2 = Sodium.Tuple2;
 
-exports.mapToImpl = function(x, s) {
+exports.mapToImpl = function(s, x) {
     return s.mapTo(x);
 }
 
