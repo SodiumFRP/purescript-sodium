@@ -135,7 +135,7 @@ testStream = runTest do
                 )
                 unlisten
                 pure nonCanceler 
-            Assert.equal 3 result
+            Assert.equal 2 result
         test "merge left" do
             a <- liftEffect $ newStreamSink Nothing 
             b <- liftEffect $ newStreamSink Nothing
