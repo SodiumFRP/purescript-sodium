@@ -51,7 +51,7 @@ testStream = runTest do
             result <- makeAff \cb -> do
                 unlisten <- listen a \value ->
                     cb $ Right value 
-                send 2 a
+                send a 2
                 unlisten
                 pure nonCanceler 
             Assert.equal result 2
@@ -61,7 +61,7 @@ testStream = runTest do
             result <- makeAff \cb -> do
                 unlisten <- listen b \value ->
                     cb $ Right value 
-                send 2 a
+                send a 2
                 unlisten
                 pure nonCanceler 
             Assert.equal result 4
@@ -75,8 +75,8 @@ testStream = runTest do
                     Ref.modify_ (\xs -> snoc xs value) refList
                     xs <- Ref.read refList
                     if (length xs == 2) then (cb $ Right xs) else (pure unit)
-                send 2 a
-                send 3 a
+                send a 2
+                send a 3
                 unlisten
                 pure nonCanceler 
             Assert.equal (fromFoldable [4, 6]) results
@@ -87,7 +87,7 @@ testStream = runTest do
             result <- makeAff \cb -> do
                 unlisten <- listen b \value ->
                     cb $ Right value 
-                send 2 a
+                send a 2
                 unlisten
                 pure nonCanceler 
             Assert.equal result 4
@@ -101,8 +101,8 @@ testStream = runTest do
                     cb $ Right value 
                 runTransaction (
                     do 
-                        send 2 a
-                        send 3 a
+                        send a 2
+                        send a 3
                 )
                 unlisten
                 pure nonCanceler 
@@ -115,8 +115,8 @@ testStream = runTest do
                     cb $ Right value 
                 runTransaction (
                     do 
-                        send 2 a
-                        send 3 a
+                        send a 2
+                        send a 3
                 )
                 unlisten
                 pure nonCanceler 
@@ -130,8 +130,8 @@ testStream = runTest do
                     cb $ Right value 
                 runTransaction (
                     do 
-                        send 3 a
-                        send 2 b
+                        send a 2
+                        send b 3
                 )
                 unlisten
                 pure nonCanceler 
@@ -145,8 +145,8 @@ testStream = runTest do
                     cb $ Right value 
                 runTransaction (
                     do 
-                        send 2 a
-                        send 3 b
+                        send a 2
+                        send b 3
                 )
                 unlisten
                 pure nonCanceler 
@@ -160,8 +160,8 @@ testStream = runTest do
                     cb $ Right value 
                 runTransaction (
                     do 
-                        send 2 a
-                        send 3 b
+                        send a 2
+                        send b 3
                 )
                 unlisten
                 pure nonCanceler 
@@ -173,9 +173,9 @@ testStream = runTest do
             result <- makeAff \cb -> do
                 unlisten <- listen b \value ->
                     cb $ Right value 
-                send 4 a
-                send 3 a
-                send 2 a
+                send a 4
+                send a 3
+                send a 2
                 unlisten
                 pure nonCanceler 
             Assert.equal result 2
@@ -188,10 +188,10 @@ testStream = runTest do
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
                     cb $ Right value 
-                send 4 a
-                send 3 a
-                send true b
-                send 2 a
+                send a 4
+                send a 3
+                send b true
+                send a 2
                 unlisten
                 pure nonCanceler 
             Assert.equal result 2
@@ -204,7 +204,7 @@ testStream = runTest do
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
                     cb $ Right value 
-                send 1 a
+                send a 1
                 unlisten
                 pure nonCanceler 
             Assert.equal result 2
@@ -215,7 +215,7 @@ testStream = runTest do
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
                     cb $ Right value 
-                send 1 a
+                send a 1
                 unlisten
                 pure nonCanceler 
             Assert.equal result 3
@@ -229,7 +229,7 @@ testStream = runTest do
             result <- makeAff \cb -> do
                 unlisten <- listen d \value ->
                     cb $ Right value 
-                send 1 a
+                send a 1
                 unlisten
                 pure nonCanceler 
             Assert.equal result 6
@@ -244,7 +244,7 @@ testStream = runTest do
             result <- makeAff \cb -> do
                 unlisten <- listen e \value ->
                     cb $ Right value 
-                send 1 a
+                send a 1
                 unlisten
                 pure nonCanceler 
             Assert.equal result 10 
@@ -262,7 +262,7 @@ testStream = runTest do
             result <- makeAff \cb -> do
                 unlisten <- listen f \value ->
                     cb $ Right value 
-                send 1 a
+                send a 1
                 unlisten
                 pure nonCanceler 
             Assert.equal result 15 
@@ -281,7 +281,7 @@ testStream = runTest do
             result <- makeAff \cb -> do
                 unlisten <- listen g \value ->
                     cb $ Right value 
-                send 1 a
+                send a 1
                 unlisten
                 pure nonCanceler 
             Assert.equal result 21 
@@ -304,7 +304,7 @@ testStream = runTest do
             result <- makeAff \cb -> do
                 unlisten <- listen b \value ->
                     cb $ Right value 
-                send 1 a
+                send a 1
                 unlisten
                 pure nonCanceler 
             Assert.equal result 2 
@@ -318,8 +318,8 @@ testStream = runTest do
                     Ref.modify_ (\xs -> snoc xs value) refList
                     xs <- Ref.read refList
                     if (length xs == 2) then (cb $ Right xs) else (pure unit)
-                send 1 a
-                send 1 a
+                send a 1
+                send a 1
                 unlisten
                 pure nonCanceler 
             Assert.equal (fromFoldable [2, 3]) results
@@ -336,7 +336,7 @@ testStream = runTest do
                     Ref.modify_ (\xs -> snoc xs value) refList
                     xs <- Ref.read refList
                     if (length xs == 2) then (cb $ Right xs) else (pure unit)
-                send 1 a
+                send a 1
                 unlisten
                 pure nonCanceler 
 
@@ -352,8 +352,8 @@ testStream = runTest do
                     Ref.modify_ (\xs -> snoc xs value) refList
                     xs <- Ref.read refList
                     if (length xs == 3) then (cb $ Right xs) else (pure unit)
-                send 1 a
-                send 1 a
+                send a 1
+                send a 1
                 unlisten
                 pure nonCanceler 
 
@@ -365,7 +365,7 @@ testStream = runTest do
             result <- makeAff \cb -> do
                 unlisten <- listen b \value ->
                     cb $ Right value 
-                send 2 a
+                send a 2
                 unlisten
                 pure nonCanceler 
             Assert.equal result 2
@@ -376,7 +376,7 @@ testStream = runTest do
             result <- makeAff \cb -> do
                 unlisten <- listen b \value ->
                     cb $ Right value 
-                send (mockDbGet) a
+                send a (mockDbGet)
                 unlisten
                 pure nonCanceler 
             Assert.equal result "DB RESULT" 

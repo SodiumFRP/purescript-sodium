@@ -41,7 +41,7 @@ testLambda = runTest do
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
                     cb $ Right value 
-                send 3 a
+                send a 3
                 unlisten
                 pure nonCanceler 
             Assert.equal result 5
@@ -55,7 +55,7 @@ testLambda = runTest do
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
                     cb $ Right value 
-                send 3 a
+                send a 3
                 unlisten
                 pure nonCanceler 
             Assert.equal result 7
