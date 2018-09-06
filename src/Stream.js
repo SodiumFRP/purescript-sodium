@@ -7,7 +7,7 @@ exports.mapToImpl = function(x, s) {
     return s.mapTo(x);
 }
 
-exports.orElseImpl = function(other, s) {
+exports.orElseImpl = function(s, other) {
     return s.orElse(other);
 }
 

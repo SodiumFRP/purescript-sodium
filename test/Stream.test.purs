@@ -130,8 +130,8 @@ testStream = runTest do
                     cb $ Right value 
                 runTransaction (
                     do 
-                        send 2 a
-                        send 3 b
+                        send 3 a
+                        send 2 b
                 )
                 unlisten
                 pure nonCanceler 

@@ -52,7 +52,7 @@ mapTo x s = runFn2 mapToImpl x (toStream s)
 -- | Variant of 'merge' that merges two streams and will drop an event
 -- | in the simultaneous case of two events in the same Transaction
 -- |
--- | The events from the second stream take priority here
+-- | The events from the first stream take priority here
 -- |
 -- | If you want to specify your own merging function, use 'merge'
 orElse :: forall a s. (SodiumStream s) => s a -> s a -> Stream a
