@@ -56,12 +56,12 @@ exports.listenCellImpl = function(c, listener) {
 }
 
 // Send
-exports.sendStreamImpl = function(a, streamSink) {
+exports.sendStreamImpl = function(streamSink, a) {
     //console.log("SENDING [" + a + "]");
     streamSink.send(a);
 }
 
-exports.sendCellImpl = function(a, cellSink) {
+exports.sendCellImpl = function(cellSink, a) {
     //console.log("SENDING [" + a + "]");
     cellSink.send(a);
 }

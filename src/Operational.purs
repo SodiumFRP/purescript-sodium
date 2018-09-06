@@ -23,7 +23,7 @@ import Data.Function.Uncurried ( Fn1, runFn1)
 -- | It breaks the property of non-detectability of cell steps/updates.
 -- | The rule with this primitive is that you should only use it in functions
 -- | that do not allow the caller to detect the cell updates.
-updates :: forall a c. (SodiumCell c) => c a -> Stream a
+updates :: forall a cel. (SodiumCell cel) => cel a -> Stream a
 updates c = runFn1 updatesImpl (toCell c)
 
 -- | A stream that is guaranteed to fire once in the transaction where value() is invoked, giving
@@ -34,12 +34,12 @@ updates c = runFn1 updatesImpl (toCell c)
 -- | It breaks the property of non-detectability of cell steps/updates.
 -- | The rule with this primitive is that you should only use it in functions
 -- | that do not allow the caller to detect the cell updates.
-value :: forall a c. (SodiumCell c) => c a -> Effect (Stream a)
+value :: forall a cel. (SodiumCell cel) => cel a -> Effect (Stream a)
 value c = runEffectFn1 valueImpl (toCell c)
 
 -- | Push each event onto a new transaction guaranteed to come before the next externally
 -- | initiated transaction. Same as 'split' but it works on a single value.
-defer :: forall a s. (SodiumStream s) => s a -> Stream a
+defer :: forall a str. (SodiumStream str) => str a -> Stream a
 defer s = runFn1 deferImpl (toStream s)
 
 -- | Push each event in the list onto a newly created transaction guaranteed
@@ -47,7 +47,7 @@ defer s = runFn1 deferImpl (toStream s)
 -- | are such that two different invocations of split() can put events into the same
 -- | new transaction, so the resulting stream's events could be simultaneous with
 -- | events output by split() or 'defer' invoked elsewhere in the code.
-split :: forall a s. (SodiumStream s) => s (Array a) -> Stream a
+split :: forall a str. (SodiumStream str) => str (Array a) -> Stream a
 split sa = runFn1 splitImpl (toStream sa)
 
 foreign import updatesImpl :: forall a. Fn1 (Cell a) (Stream a)

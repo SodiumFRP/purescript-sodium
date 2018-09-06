@@ -41,7 +41,7 @@ testLambda = runTest do
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
                     cb $ Right value 
-                send 3 a
+                send a 3
                 unlisten
                 pure nonCanceler 
             Assert.equal result 5
@@ -51,12 +51,11 @@ testLambda = runTest do
             let c = snapshotLambda
                         ((\x -> \y -> x + y + (unsafePerformEffect $ sample b))) 
                         [mkDep a, mkDep b]
-                        (b)
-                        a 
+                        a b
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
                     cb $ Right value 
-                send 3 a
+                send a 3
                 unlisten
                 pure nonCanceler 
             Assert.equal result 7
@@ -65,8 +64,7 @@ testLambda = runTest do
             let c = liftLambda
                         ((\x y -> x + y + (unsafePerformEffect $ sample b))) 
                         [mkDep b]
-                        (b)
-                        (newCell 3)
+                        (newCell 3) b
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
                     cb $ Right value 

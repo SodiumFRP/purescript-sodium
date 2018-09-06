@@ -7,48 +7,47 @@ exports.mapToImpl = function(x, s) {
     return s.mapTo(x);
 }
 
-exports.orElseImpl = function(other, s) {
+exports.orElseImpl = function(s, other) {
     return s.orElse(other);
 }
 
-exports.mergeImpl = function(f, other, s) {
-    //flipped so that other's events are on the left
-    return other.merge(s, f);
+exports.mergeImpl = function(f, s, other) {
+    return s.merge(other, f);
 }
 
 exports.filterImpl = function(f, s) {
     return s.filter(f); 
 }
 
-exports.gateImpl = function (c, s) {
+exports.gateImpl = function (s, c) {
     return s.gate(c);
 }
 
-exports.snapshot1Impl = function (c, s) {
+exports.snapshot1Impl = function (s, c) {
     return s.snapshot1(c);
 }
 
-exports.snapshotImpl = function (fn, c, s) {
+exports.snapshotImpl = function (fn, s, c) {
     return s.snapshot(c, fn);
 }
 
-exports.snapshot3Impl = function (fn, c1, c2, s) {
+exports.snapshot3Impl = function (fn, s, c1, c2) {
     return s.snapshot3(c1, c2, fn);
 }
 
-exports.snapshot4Impl = function (fn, c1, c2, c3, s) {
+exports.snapshot4Impl = function (fn, s, c1, c2, c3) {
     return s.snapshot4(c1, c2, c3, fn);
 }
 
-exports.snapshot5Impl = function (fn, c1, c2, c3, c4, s) {
+exports.snapshot5Impl = function (fn, s, c1, c2, c3, c4) {
     return s.snapshot5(c1, c2, c3, c4, fn);
 }
 
-exports.snapshot6Impl = function (fn, c1, c2, c3, c4, c5, s) {
+exports.snapshot6Impl = function (fn, s, c1, c2, c3, c4, c5) {
     return s.snapshot6(c1, c2, c3, c4, c5, fn);
 }
 
-exports.holdImpl = function (x, s) {
+exports.holdImpl = function (s, x) {
     return s.hold(x);
 }
 
@@ -67,7 +66,7 @@ exports.onceImpl = function(s) {
     return s.once();
 }
 
-exports.loopStreamImpl = function(s, sLoop) {
+exports.loopStreamImpl = function(sLoop, s) {
     sLoop.loop(s);
 }
 

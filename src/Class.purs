@@ -44,7 +44,7 @@ class Listenable l where
 -- Sendable
 -- | Send events or change of behavior
 class Sendable s where
-    send :: forall a. a -> s a -> Effect Unit
+    send :: forall a. s a -> a -> Effect Unit
 
 -- | Constructors
 
@@ -142,8 +142,8 @@ instance sendStream :: Sendable StreamSink where
 instance sendCell :: Sendable CellSink where
     send = runEffectFn2 sendCellImpl
 
-foreign import sendStreamImpl :: forall a. EffectFn2 a (StreamSink a) Unit
-foreign import sendCellImpl :: forall a. EffectFn2 a (CellSink a) Unit
+foreign import sendStreamImpl :: forall a. EffectFn2 (StreamSink a) a Unit
+foreign import sendCellImpl :: forall a. EffectFn2 (CellSink a) a Unit
 
 -- Categories (Stream)
 

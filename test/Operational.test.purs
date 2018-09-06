@@ -39,8 +39,8 @@ testOperational = runTest do
                     Ref.modify_ (\xs -> snoc xs v) refList
                     xs <- Ref.read refList
                     if (length xs == 2) then (cb $ Right xs) else (pure unit)
-                send 2 a
-                send 3 a
+                send a 2
+                send a 3
                 unlisten
                 pure nonCanceler 
             Assert.equal (fromFoldable [2, 3]) results
@@ -58,7 +58,7 @@ testOperational = runTest do
                         pure nonCanceler
                     pure unit 
                 )
-                send 3 a 
+                send a 3
                 pure nonCanceler
             Assert.equal (fromFoldable [2, 3]) results
         test "defer" do
@@ -70,8 +70,8 @@ testOperational = runTest do
                     Ref.modify_ (\xs -> snoc xs value) refList
                     xs <- Ref.read refList
                     if (length xs == 2) then (cb $ Right xs) else (pure unit)
-                send 2 a
-                send 3 a
+                send a 2
+                send a 3
                 unlisten
                 pure nonCanceler 
             Assert.equal (fromFoldable [2, 3]) results
@@ -84,7 +84,7 @@ testOperational = runTest do
                     Ref.modify_ (\xs -> snoc xs value) refList
                     xs <- Ref.read refList
                     if (length xs == 2) then (cb $ Right xs) else (pure unit)
-                send [2,3] a
+                send a [2,3] 
                 unlisten
                 pure nonCanceler 
             Assert.equal (fromFoldable [2, 3]) results

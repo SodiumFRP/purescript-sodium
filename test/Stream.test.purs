@@ -51,7 +51,7 @@ testStream = runTest do
             result <- makeAff \cb -> do
                 unlisten <- listen a \value ->
                     cb $ Right value 
-                send 2 a
+                send a 2
                 unlisten
                 pure nonCanceler 
             Assert.equal result 2
@@ -61,7 +61,7 @@ testStream = runTest do
             result <- makeAff \cb -> do
                 unlisten <- listen b \value ->
                     cb $ Right value 
-                send 2 a
+                send a 2
                 unlisten
                 pure nonCanceler 
             Assert.equal result 4
@@ -75,8 +75,8 @@ testStream = runTest do
                     Ref.modify_ (\xs -> snoc xs value) refList
                     xs <- Ref.read refList
                     if (length xs == 2) then (cb $ Right xs) else (pure unit)
-                send 2 a
-                send 3 a
+                send a 2
+                send a 3
                 unlisten
                 pure nonCanceler 
             Assert.equal (fromFoldable [4, 6]) results
@@ -87,7 +87,7 @@ testStream = runTest do
             result <- makeAff \cb -> do
                 unlisten <- listen b \value ->
                     cb $ Right value 
-                send 2 a
+                send a 2
                 unlisten
                 pure nonCanceler 
             Assert.equal result 4
@@ -101,8 +101,8 @@ testStream = runTest do
                     cb $ Right value 
                 runTransaction (
                     do 
-                        send 2 a
-                        send 3 a
+                        send a 2
+                        send a 3
                 )
                 unlisten
                 pure nonCanceler 
@@ -115,8 +115,8 @@ testStream = runTest do
                     cb $ Right value 
                 runTransaction (
                     do 
-                        send 2 a
-                        send 3 a
+                        send a 2
+                        send a 3
                 )
                 unlisten
                 pure nonCanceler 
@@ -130,12 +130,12 @@ testStream = runTest do
                     cb $ Right value 
                 runTransaction (
                     do 
-                        send 2 a
-                        send 3 b
+                        send a 2
+                        send b 3
                 )
                 unlisten
                 pure nonCanceler 
-            Assert.equal 3 result
+            Assert.equal 2 result
         test "merge left" do
             a <- liftEffect $ newStreamSink Nothing 
             b <- liftEffect $ newStreamSink Nothing
@@ -145,8 +145,8 @@ testStream = runTest do
                     cb $ Right value 
                 runTransaction (
                     do 
-                        send 2 a
-                        send 3 b
+                        send a 2
+                        send b 3
                 )
                 unlisten
                 pure nonCanceler 
@@ -160,8 +160,8 @@ testStream = runTest do
                     cb $ Right value 
                 runTransaction (
                     do 
-                        send 2 a
-                        send 3 b
+                        send a 2
+                        send b 3
                 )
                 unlisten
                 pure nonCanceler 
@@ -173,9 +173,9 @@ testStream = runTest do
             result <- makeAff \cb -> do
                 unlisten <- listen b \value ->
                     cb $ Right value 
-                send 4 a
-                send 3 a
-                send 2 a
+                send a 4
+                send a 3
+                send a 2
                 unlisten
                 pure nonCanceler 
             Assert.equal result 2
@@ -184,14 +184,14 @@ testStream = runTest do
         test "gate" do
             a <- liftEffect $ newStreamSink Nothing
             b <- liftEffect $ newCellSink false Nothing
-            let c = gate b a
+            let c = gate a b
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
                     cb $ Right value 
-                send 4 a
-                send 3 a
-                send true b
-                send 2 a
+                send a 4
+                send a 3
+                send b true
+                send a 2
                 unlisten
                 pure nonCanceler 
             Assert.equal result 2
@@ -200,22 +200,22 @@ testStream = runTest do
         test "snapshot1" do
             a <- liftEffect $ newStreamSink Nothing
             let b = newCell 2
-            let c = snapshot1 b (a :: StreamSink Int)
+            let c = snapshot1 (a :: StreamSink Int) b
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
                     cb $ Right value 
-                send 1 a
+                send a 1
                 unlisten
                 pure nonCanceler 
             Assert.equal result 2
         test "snapshot" do
             a <- liftEffect $ newStreamSink Nothing
             let b = newCell 2
-            let c = snapshot (\x1 -> \x2 -> x1 + x2) b (a :: StreamSink Int)
+            let c = snapshot (\x1 -> \x2 -> x1 + x2) (a :: StreamSink Int) b
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
                     cb $ Right value 
-                send 1 a
+                send a 1
                 unlisten
                 pure nonCanceler 
             Assert.equal result 3
@@ -225,11 +225,11 @@ testStream = runTest do
             let c = newCell 3
             let d = snapshot3 
                     (\x1 -> \x2 -> \x3 -> x1 + x2 + x3) 
-                    b c a 
+                    a b c 
             result <- makeAff \cb -> do
                 unlisten <- listen d \value ->
                     cb $ Right value 
-                send 1 a
+                send a 1
                 unlisten
                 pure nonCanceler 
             Assert.equal result 6
@@ -240,11 +240,11 @@ testStream = runTest do
             let d = newCell 4
             let e = snapshot4 
                     (\x1 -> \x2 -> \x3 -> \x4 -> x1 + x2 + x3 + x4) 
-                    b c d a
+                    a b c d
             result <- makeAff \cb -> do
                 unlisten <- listen e \value ->
                     cb $ Right value 
-                send 1 a
+                send a 1
                 unlisten
                 pure nonCanceler 
             Assert.equal result 10 
@@ -258,11 +258,11 @@ testStream = runTest do
                     (\x1 -> \x2 -> \x3 -> \x4 -> \x5 ->
                         x1 + x2 + x3 + x4 + x5
                     ) 
-                    b c d e a
+                    a b c d e
             result <- makeAff \cb -> do
                 unlisten <- listen f \value ->
                     cb $ Right value 
-                send 1 a
+                send a 1
                 unlisten
                 pure nonCanceler 
             Assert.equal result 15 
@@ -277,18 +277,18 @@ testStream = runTest do
                     (\x1 -> \x2 -> \x3 -> \x4 -> \x5 -> \x6 -> 
                         x1 + x2 + x3 + x4 + x5 + x6
                     ) 
-                    b c d e f a
+                    a b c d e f
             result <- makeAff \cb -> do
                 unlisten <- listen g \value ->
                     cb $ Right value 
-                send 1 a
+                send a 1
                 unlisten
                 pure nonCanceler 
             Assert.equal result 21 
     suite "[stream] hold" do
         test "hold" do
             a <- liftEffect $ newStreamSink Nothing
-            b <- liftEffect $ hold 2 a 
+            b <- liftEffect $ hold a 2
             result <- makeAff \cb -> do
                 unlisten <- listen b \value ->
                     cb $ Right value 
@@ -304,7 +304,7 @@ testStream = runTest do
             result <- makeAff \cb -> do
                 unlisten <- listen b \value ->
                     cb $ Right value 
-                send 1 a
+                send a 1
                 unlisten
                 pure nonCanceler 
             Assert.equal result 2 
@@ -318,8 +318,8 @@ testStream = runTest do
                     Ref.modify_ (\xs -> snoc xs value) refList
                     xs <- Ref.read refList
                     if (length xs == 2) then (cb $ Right xs) else (pure unit)
-                send 1 a
-                send 1 a
+                send a 1
+                send a 1
                 unlisten
                 pure nonCanceler 
             Assert.equal (fromFoldable [2, 3]) results
@@ -336,7 +336,7 @@ testStream = runTest do
                     Ref.modify_ (\xs -> snoc xs value) refList
                     xs <- Ref.read refList
                     if (length xs == 2) then (cb $ Right xs) else (pure unit)
-                send 1 a
+                send a 1
                 unlisten
                 pure nonCanceler 
 
@@ -352,8 +352,8 @@ testStream = runTest do
                     Ref.modify_ (\xs -> snoc xs value) refList
                     xs <- Ref.read refList
                     if (length xs == 3) then (cb $ Right xs) else (pure unit)
-                send 1 a
-                send 1 a
+                send a 1
+                send a 1
                 unlisten
                 pure nonCanceler 
 
@@ -365,7 +365,7 @@ testStream = runTest do
             result <- makeAff \cb -> do
                 unlisten <- listen b \value ->
                     cb $ Right value 
-                send 2 a
+                send a 2
                 unlisten
                 pure nonCanceler 
             Assert.equal result 2
@@ -376,7 +376,7 @@ testStream = runTest do
             result <- makeAff \cb -> do
                 unlisten <- listen b \value ->
                     cb $ Right value 
-                send (mockDbGet) a
+                send a (mockDbGet)
                 unlisten
                 pure nonCanceler 
             Assert.equal result "DB RESULT" 

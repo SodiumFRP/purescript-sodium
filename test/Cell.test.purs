@@ -65,7 +65,7 @@ testCell = runTest do
                     Ref.modify_ (\xs -> snoc xs value) refList
                     xs <- Ref.read refList
                     if (length xs == 2) then (cb $ Right xs) else (pure unit)
-                send 4 a
+                send a 4
                 unlisten
                 pure nonCanceler 
             )
@@ -156,7 +156,7 @@ testCell = runTest do
             result <- makeAff \cb -> do
                 unlisten <- listen s2 \value ->
                     cb $ Right value 
-                send 2 s1
+                send s1 2
                 unlisten
                 pure nonCanceler 
             Assert.equal result 2
