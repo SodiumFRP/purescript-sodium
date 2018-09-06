@@ -81,23 +81,23 @@ instance lambda1Cell :: Lambda1 Cell where
 foreign import mapLambda1CellImpl :: forall a b c. Fn3 (a -> b) (Array c) (Cell a) (Cell b)
 
 
-liftLambda :: forall a b c cel. (SodiumCell cel) => (a -> b -> c) -> Array Dep -> cel b -> cel a -> Cell c
+liftLambda :: forall a b c cel. (SodiumCell cel) => (a -> b -> c) -> Array Dep -> cel a -> cel b -> Cell c
 liftLambda f d c1 c2 = runFn4 liftLambdaImpl (mkFn2 f) d (toCell c1) (toCell c2)
          
-lift3Lambda :: forall a b c d cel. (SodiumCell cel) => (a -> b -> c -> d) -> Array Dep -> cel b -> cel c -> cel a -> Cell d
+lift3Lambda :: forall a b c d cel. (SodiumCell cel) => (a -> b -> c -> d) -> Array Dep -> cel a -> cel b -> cel c -> Cell d
 lift3Lambda f d c1 c2 c3 = runFn5 lift3LambdaImpl (mkFn3 f) d (toCell c1) (toCell c2) (toCell c3)
 
-lift4Lambda :: forall a b c d e cel. (SodiumCell cel) => (a -> b -> c -> d -> e) -> Array Dep -> cel b -> cel c -> cel d -> cel a -> Cell e
+lift4Lambda :: forall a b c d e cel. (SodiumCell cel) => (a -> b -> c -> d -> e) -> Array Dep -> cel a -> cel b -> cel c -> cel d -> Cell e
 lift4Lambda f d c1 c2 c3 c4 = runFn6 lift4LambdaImpl (mkFn4 f) d (toCell c1) (toCell c2) (toCell c3) (toCell c4)
 
-lift5Lambda :: forall a b c d e f cel. (SodiumCell cel) => (a -> b -> c -> d -> e -> f) -> Array Dep -> cel b -> cel c -> cel d -> cel e -> cel a -> Cell f
+lift5Lambda :: forall a b c d e f cel. (SodiumCell cel) => (a -> b -> c -> d -> e -> f) -> Array Dep -> cel a -> cel b -> cel c -> cel d -> cel e -> Cell f
 lift5Lambda f d c1 c2 c3 c4 c5 = runFn7 lift5LambdaImpl (mkFn5 f) d (toCell c1) (toCell c2) (toCell c3) (toCell c4) (toCell c5)
 
-lift6Lambda :: forall a b c d e f g cel. (SodiumCell cel) => (a -> b -> c -> d -> e -> f -> g) -> Array Dep -> cel b -> cel c -> cel d -> cel e -> cel f -> cel a -> Cell g
+lift6Lambda :: forall a b c d e f g cel. (SodiumCell cel) => (a -> b -> c -> d -> e -> f -> g) -> Array Dep -> cel a -> cel b -> cel c -> cel d -> cel e -> cel f -> Cell g
 lift6Lambda f d c1 c2 c3 c4 c5 c6 = runFn8 lift6LambdaImpl (mkFn6 f) d (toCell c1) (toCell c2) (toCell c3) (toCell c4) (toCell c5) (toCell c6)
 
-foreign import liftLambdaImpl :: forall a b c. Fn4 (Fn2 a b c) (Array Dep) (Cell b) (Cell a) (Cell c)
-foreign import lift3LambdaImpl :: forall a b c d. Fn5 (Fn3 a b c d) (Array Dep) (Cell b) (Cell c) (Cell a) (Cell d)
-foreign import lift4LambdaImpl :: forall a b c d e. Fn6 (Fn4 a b c d e) (Array Dep) (Cell b) (Cell c) (Cell d) (Cell a) (Cell e)
-foreign import lift5LambdaImpl :: forall a b c d e f. Fn7 (Fn5 a b c d e f) (Array Dep) (Cell b) (Cell c) (Cell d) (Cell e) (Cell a) (Cell f)
-foreign import lift6LambdaImpl :: forall a b c d e f g. Fn8 (Fn6 a b c d e f g) (Array Dep) (Cell b) (Cell c) (Cell d) (Cell e) (Cell f) (Cell a) (Cell g)
+foreign import liftLambdaImpl :: forall a b c. Fn4 (Fn2 a b c) (Array Dep) (Cell a) (Cell b) (Cell c)
+foreign import lift3LambdaImpl :: forall a b c d. Fn5 (Fn3 a b c d) (Array Dep) (Cell a) (Cell b) (Cell c) (Cell d)
+foreign import lift4LambdaImpl :: forall a b c d e. Fn6 (Fn4 a b c d e) (Array Dep) (Cell a) (Cell b) (Cell c) (Cell d) (Cell e)
+foreign import lift5LambdaImpl :: forall a b c d e f. Fn7 (Fn5 a b c d e f) (Array Dep) (Cell a) (Cell b) (Cell c) (Cell d) (Cell e) (Cell f)
+foreign import lift6LambdaImpl :: forall a b c d e f g. Fn8 (Fn6 a b c d e f g) (Array Dep) (Cell a) (Cell b) (Cell c) (Cell d) (Cell e) (Cell f) (Cell g)

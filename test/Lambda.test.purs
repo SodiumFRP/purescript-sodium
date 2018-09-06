@@ -64,8 +64,7 @@ testLambda = runTest do
             let c = liftLambda
                         ((\x y -> x + y + (unsafePerformEffect $ sample b))) 
                         [mkDep b]
-                        (b)
-                        (newCell 3)
+                        (newCell 3) b
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
                     cb $ Right value 

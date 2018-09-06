@@ -37,19 +37,19 @@ exports.mapLambda1CellImpl = function (f, deps, c) {
     return c.map(lambda1(f, deps));
 }
 
-exports.liftLambdaImpl = function (fn, deps, c1, c) {
+exports.liftLambdaImpl = function (fn, deps, c, c1) {
     return c.lift(c1, lambda2(fn, deps));
 }
 
-exports.lift3LambdaImpl = function (fn, deps, c1, c2, c) {
+exports.lift3LambdaImpl = function (fn, deps, c, c1, c2) {
     return c.lift3(c1, c2, lambda3(fn, deps));
 }
-exports.lift4LambdaImpl = function (fn, deps, c1, c2, c3, c) {
+exports.lift4LambdaImpl = function (fn, deps, c, c1, c2, c3) {
     return c.lift4(c1, c2, c3, lambda4(fn, deps));
 }
-exports.lift5LambdaImpl = function (fn, deps, c1, c2, c3, c4, c) {
+exports.lift5LambdaImpl = function (fn, deps, c, c1, c2, c3, c4) {
     return c.lift5(c1, c2, c3, c4, lambda5(fn, deps));
 }
-exports.lift6LambdaImpl = function (fn, deps, c1, c2, c3, c4, c5, c) {
+exports.lift6LambdaImpl = function (fn, deps, c, c1, c2, c3, c4, c5) {
     return c.lift6(c1, c2, c3, c4, c5, lambda6(fn, deps));
 }
