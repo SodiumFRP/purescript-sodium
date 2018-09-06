@@ -46,8 +46,8 @@ import Effect.Unsafe (unsafePerformEffect)
 
 -- | Transform the stream's event values into the specified constant value.
 -- | b is a constant value.
-mapTo :: forall a b s. (SodiumStream s) => s a -> b -> Stream b
-mapTo s x = runFn2 mapToImpl (toStream s) x
+mapTo :: forall a b s. (SodiumStream s) => b -> s a -> Stream b
+mapTo x s = runFn2 mapToImpl x (toStream s)
 
 -- | Variant of 'merge' that merges two streams and will drop an event
 -- | in the simultaneous case of two events in the same Transaction
@@ -149,7 +149,7 @@ execute s = map unsafePerformEffect (toStream s)
 
 -- Foreign imports
 
-foreign import mapToImpl :: forall a b. Fn2 (Stream a) b (Stream b)
+foreign import mapToImpl :: forall a b. Fn2 b (Stream a) (Stream b)
 foreign import orElseImpl :: forall a. Fn2 (Stream a) (Stream a) (Stream a)
 foreign import mergeImpl :: forall a. Fn3 (Fn2 a a a) (Stream a) (Stream a) (Stream a)
 foreign import filterImpl :: forall a. Fn2 (a -> Boolean) (Stream a) (Stream a)
