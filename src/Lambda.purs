@@ -51,30 +51,28 @@ instance lambda1Stream :: Lambda1 Stream where
     mapLambda1 = runFn3 mapLambda1StreamImpl
 
 
-snapshotLambda :: forall a b c cel str. (SodiumStream str) => (SodiumCell cel) => (a -> b -> c) -> Array Dep -> cel b -> str a -> Stream c
-snapshotLambda f d c s = runFn4 snapshotLambdaImpl (mkFn2 f) d (toCell c) (toStream s)
+snapshotLambda :: forall a b c cel str. (SodiumStream str) => (SodiumCell cel) => (a -> b -> c) -> Array Dep -> str a -> cel b -> Stream c
+snapshotLambda f d s c = runFn4 snapshotLambdaImpl (mkFn2 f) d (toStream s) (toCell c) 
          
-snapshot3Lambda :: forall a b c d cel str. (SodiumStream str) => (SodiumCell cel) => (a -> b -> c -> d) -> Array Dep -> cel b -> cel c -> str a -> Stream d
-snapshot3Lambda f d c1 c2 s = runFn5 snapshot3LambdaImpl (mkFn3 f) d (toCell c1) (toCell c2) (toStream s)
+snapshot3Lambda :: forall a b c d cel str. (SodiumStream str) => (SodiumCell cel) => (a -> b -> c -> d) -> Array Dep -> str a -> cel b -> cel c -> Stream d
+snapshot3Lambda f d s c1 c2 = runFn5 snapshot3LambdaImpl (mkFn3 f) d (toStream s) (toCell c1) (toCell c2)
 
-snapshot4Lambda :: forall a b c d e cel str. (SodiumStream str) => (SodiumCell cel) => (a -> b -> c -> d -> e) -> Array Dep -> cel b -> cel c -> cel d -> str a -> Stream e
-snapshot4Lambda f d c1 c2 c3 s = runFn6 snapshot4LambdaImpl (mkFn4 f) d (toCell c1) (toCell c2) (toCell c3) (toStream s)
+snapshot4Lambda :: forall a b c d e cel str. (SodiumStream str) => (SodiumCell cel) => (a -> b -> c -> d -> e) -> Array Dep -> str a -> cel b -> cel c -> cel d -> Stream e
+snapshot4Lambda f d s c1 c2 c3 = runFn6 snapshot4LambdaImpl (mkFn4 f) d (toStream s) (toCell c1) (toCell c2) (toCell c3)
 
-snapshot5Lambda :: forall a b c d e f cel str. (SodiumStream str) => (SodiumCell cel) => (a -> b -> c -> d -> e -> f) -> Array Dep -> cel b -> cel c -> cel d -> cel e -> str a -> Stream f
-snapshot5Lambda f d c1 c2 c3 c4 s = runFn7 snapshot5LambdaImpl (mkFn5 f) d (toCell c1) (toCell c2) (toCell c3) (toCell c4) (toStream s)
-
-snapshot6Lambda :: forall a b c d e f g cel str. (SodiumStream str) => (SodiumCell cel) => (a -> b -> c -> d -> e -> f -> g) -> Array Dep -> cel b -> cel c -> cel d -> cel e -> cel f -> str a -> Stream g
-snapshot6Lambda f d c1 c2 c3 c4 c5 s = runFn8 snapshot6LambdaImpl (mkFn6 f) d (toCell c1) (toCell c2) (toCell c3) (toCell c4) (toCell c5) (toStream s)
-
+snapshot5Lambda :: forall a b c d e f cel str. (SodiumStream str) => (SodiumCell cel) => (a -> b -> c -> d -> e -> f) -> Array Dep -> str a -> cel b -> cel c -> cel d -> cel e -> Stream f
+snapshot5Lambda f d s c1 c2 c3 c4 = runFn7 snapshot5LambdaImpl (mkFn5 f) d (toStream s) (toCell c1) (toCell c2) (toCell c3) (toCell c4) 
+snapshot6Lambda :: forall a b c d e f g cel str. (SodiumStream str) => (SodiumCell cel) => (a -> b -> c -> d -> e -> f -> g) -> Array Dep -> str a -> cel b -> cel c -> cel d -> cel e -> cel f -> Stream g
+snapshot6Lambda f d s c1 c2 c3 c4 c5 = runFn8 snapshot6LambdaImpl (mkFn6 f) d (toStream s) (toCell c1) (toCell c2) (toCell c3) (toCell c4) (toCell c5)
 
 
 foreign import mapLambda1StreamImpl :: forall a b c. Fn3 (a -> b) (Array c) (Stream a) (Stream b)
 
-foreign import snapshotLambdaImpl :: forall a b c. Fn4 (Fn2 a b c) (Array Dep) (Cell b) (Stream a) (Stream c)
-foreign import snapshot3LambdaImpl :: forall a b c d. Fn5 (Fn3 a b c d) (Array Dep) (Cell b) (Cell c) (Stream a) (Stream d)
-foreign import snapshot4LambdaImpl :: forall a b c d e. Fn6 (Fn4 a b c d e) (Array Dep) (Cell b) (Cell c) (Cell d) (Stream a) (Stream e)
-foreign import snapshot5LambdaImpl :: forall a b c d e f. Fn7 (Fn5 a b c d e f) (Array Dep) (Cell b) (Cell c) (Cell d) (Cell e) (Stream a) (Stream f)
-foreign import snapshot6LambdaImpl :: forall a b c d e f g. Fn8 (Fn6 a b c d e f g) (Array Dep) (Cell b) (Cell c) (Cell d) (Cell e) (Cell f) (Stream a) (Stream g)
+foreign import snapshotLambdaImpl :: forall a b c. Fn4 (Fn2 a b c) (Array Dep) (Stream a) (Cell b) (Stream c)
+foreign import snapshot3LambdaImpl :: forall a b c d. Fn5 (Fn3 a b c d) (Array Dep) (Stream a) (Cell b) (Cell c) (Stream d)
+foreign import snapshot4LambdaImpl :: forall a b c d e. Fn6 (Fn4 a b c d e) (Array Dep) (Stream a) (Cell b) (Cell c) (Cell d) (Stream e)
+foreign import snapshot5LambdaImpl :: forall a b c d e f. Fn7 (Fn5 a b c d e f) (Array Dep) (Stream a) (Cell b) (Cell c) (Cell d) (Cell e) (Stream f)
+foreign import snapshot6LambdaImpl :: forall a b c d e f g. Fn8 (Fn6 a b c d e f g) (Array Dep) (Stream a) (Cell b) (Cell c) (Cell d) (Cell e) (Cell f) (Stream g)
 
 -- Cell 
 instance lambda1Cell :: Lambda1 Cell where

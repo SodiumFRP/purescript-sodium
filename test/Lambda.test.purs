@@ -51,8 +51,7 @@ testLambda = runTest do
             let c = snapshotLambda
                         ((\x -> \y -> x + y + (unsafePerformEffect $ sample b))) 
                         [mkDep a, mkDep b]
-                        (b)
-                        a 
+                        a b
             result <- makeAff \cb -> do
                 unlisten <- listen c \value ->
                     cb $ Right value 
