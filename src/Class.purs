@@ -30,6 +30,7 @@ import Unsafe.Coerce (unsafeCoerce)
 import Data.Nullable (Nullable, toNullable)
 import Data.Maybe (Maybe)
 import Data.Function.Uncurried ( Fn0, runFn0, Fn1, runFn1, Fn2, runFn2, mkFn2)
+import Control.Alt (class Alt)
 
 -- Common Typeclasses
 
@@ -155,6 +156,9 @@ instance semigroupStream :: Semigroup (Stream a) where
 
 instance monoidStream :: Monoid (Stream a) where
     mempty = newStream 
+
+instance altStream :: Alt Stream where
+    alt = append
 
 foreign import mapStreamImpl :: forall a b. Fn2 (a -> b) (Stream a) (Stream b)
 
