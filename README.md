@@ -1,7 +1,12 @@
 # purescript-sodium
 [![Build Status](https://travis-ci.org/SodiumFRP/purescript-sodium.svg?branch=master)](https://travis-ci.org/SodiumFRP/purescript-sodium)
 
-Purescript wrapper for SodiumFRP
+Purescript wrapper for [SodiumFRP](https://github.com/SodiumFRP/sodium-typescript), a Functional Reactive Programming (FRP) library.
+
+# Examples
+----
+Here are some demos from the community you can try in your browser
+1. [FRPong](https://github.com/dakom/frpong)
 
 ## Installation
 
