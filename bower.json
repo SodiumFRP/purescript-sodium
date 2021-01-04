@@ -23,10 +23,10 @@
     "tests"
   ],
   "dependencies": {
-    "purescript-aff": "^5.0.2",
-    "purescript-nullable": "^4.0.0",
-    "purescript-test-unit": "^14.0.0",
-    "purescript-quickcheck-laws": "^4.0.0",
-    "purescript-numbers": "^6.0.0"
+    "purescript-aff": "^5.1.2",
+    "purescript-nullable": "^4.1.1",
+    "purescript-test-unit": "^15.0.0",
+    "purescript-quickcheck-laws": "^5.1.0",
+    "purescript-numbers": "^7.0.0"
   }
 }
